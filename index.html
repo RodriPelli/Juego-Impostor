@@ -1,122 +1,185 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Juego del Impostor</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
-    h2 { text-align: center; }
-    .screen { display: none; }
-    .active { display: block; }
-    button { padding: 10px 20px; margin: 5px; border-radius: 10px; border: none; background: #333; color: white; font-size: 16px; cursor: pointer; }
-    input, select { padding: 10px; font-size: 16px; width: 100%; margin: 5px 0; }
-    .player-btn { width: 100%; background: #007bff; }
-    .back-btn { background: #666; }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Juego del Impostor</title>
+<style>
+    body {
+        margin: 0;
+        font-family: "Poppins", sans-serif;
+        background: linear-gradient(135deg, #6a00ff, #ff008c);
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    .container {
+        width: 90%;
+        max-width: 450px;
+        background: rgba(0, 0, 0, 0.35);
+        padding: 25px;
+        border-radius: 20px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
+        text-align: center;
+        animation: fadeIn 0.5s ease;
+    }
+
+    h1, h2 {
+        margin-bottom: 15px;
+    }
+
+    button {
+        width: 100%;
+        padding: 15px;
+        margin: 10px 0;
+        border: none;
+        border-radius: 12px;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+        background: white;
+        color: #6a00ff;
+        transition: 0.2s ease;
+    }
+
+    button:hover {
+        transform: scale(1.05);
+        background: #ffd6f4;
+    }
+
+    input {
+        width: 100%;
+        padding: 12px;
+        margin: 10px 0;
+        border: none;
+        border-radius: 10px;
+        font-size: 16px;
+        text-align: center;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    @keyframes fadeIn {
+        from {opacity: 0; transform: scale(0.95);} 
+        to {opacity: 1; transform: scale(1);} 
+    }
+</style>
 </head>
 <body>
-  <h2>Juego del Impostor</h2>
+<div class="container" id="pantalla1">
+    <h1>🎭 Juego del Impostor</h1>
+    <h2>Elige una categoría</h2>
+    <button onclick="seleccionarCategoria('Animales')">Animales</button>
+    <button onclick="seleccionarCategoria('Comidas')">Comidas</button>
+    <button onclick="seleccionarCategoria('Países')">Países</button>
+    <button onclick="categoriaPersonalizada()">Personalizada ✏️</button>
+</div>
 
-  <!-- Pantalla 1: Elegir categoría -->
-  <div id="screen1" class="screen active">
-    <h3>Elegí una categoría</h3>
-    <select id="categorySelect">
-      <option value="Comida">Comida</option>
-      <option value="Animales">Animales</option>
-      <option value="Objetos">Objetos</option>
-      <option value="Lugares">Lugares</option>
-    </select>
-    <button onclick="goToScreen(2)">Siguiente</button>
-  </div>
+<div class="container hidden" id="pantallaPalabra">
+    <h2 id="tituloCat"></h2>
+    <input id="palabraPersonal" placeholder="Escribe la palabra secreta" />
+    <button onclick="confirmarPalabra()">Confirmar palabra</button>
+</div>
 
-  <!-- Pantalla 2: Participantes -->
-  <div id="screen2" class="screen">
-    <h3>Ingresá los participantes</h3>
-    <textarea id="playersInput" rows="6" placeholder="Un nombre por línea"></textarea>
-    <button onclick="startGame()">Iniciar juego</button>
-    <button class="back-btn" onclick="goToScreen(1)">Volver</button>
-  </div>
+<div class="container hidden" id="pantalla2">
+    <h2>Ingresa los participantes</h2>
+    <input id="nombreJugador" placeholder="Nombre" />
+    <button onclick="agregarJugador()">Agregar</button>
+    <div id="listaJugadores"></div>
+    <button onclick="empezarJuego()">Comenzar</button>
+</div>
 
-  <!-- Pantalla 3: Lista de jugadores -->
-  <div id="screen3" class="screen">
-    <h3>Tocá tu nombre para ver tu palabra</h3>
-    <div id="playersList"></div>
-    <button class="back-btn" onclick="resetGame()">Reiniciar</button>
-  </div>
+<div class="container hidden" id="pantalla3">
+    <h2>Revelar palabra</h2>
+    <div id="botonesJugadores"></div>
+</div>
 
-  <!-- Pantalla 4: Palabra asignada -->
-  <div id="screen4" class="screen">
-    <h3 id="playerName"></h3>
-    <h2 id="assignedWord" style="font-size: 32px; margin: 20px 0;"></h2>
-    <button class="back-btn" onclick="backToPlayers()">Ocultar</button>
-  </div>
+<div class="container hidden" id="pantalla4">
+    <h1 id="mensajeJugador"></h1>
+    <button onclick="volver()">Volver</button>
+</div>
 
 <script>
-  let players = [];
-  let words = {
-    "Comida": ["Pizza", "Hamburguesa", "Empanada", "Helado"],
-    "Animales": ["Perro", "Gato", "Caballo", "Elefante"],
-    "Objetos": ["Lámpara", "Mesa", "Teléfono", "Llave"],
-    "Lugares": ["Playa", "Montaña", "Escuela", "Hospital"]
-  };
-  let impostorIndex = null;
-  let secretWord = "";
+    let categoria = "";
+    let palabra = "";
+    let jugadores = [];
+    let asignaciones = {};
 
-  function goToScreen(n) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById('screen' + n).classList.add('active');
-  }
-
-  function startGame() {
-    const raw = document.getElementById('playersInput').value.trim();
-    if (!raw) return alert('Ingresá al menos un participante');
-
-    players = raw.split(/\n+/).map(p => p.trim()).filter(p => p);
-    if (players.length < 3) return alert('Mínimo 3 jugadores');
-
-    const category = document.getElementById('categorySelect').value;
-    const wordList = words[category];
-    secretWord = wordList[Math.floor(Math.random() * wordList.length)];
-    impostorIndex = Math.floor(Math.random() * players.length);
-
-    renderPlayers();
-    goToScreen(3);
-  }
-
-  function renderPlayers() {
-    const container = document.getElementById('playersList');
-    container.innerHTML = '';
-    players.forEach((p, i) => {
-      const btn = document.createElement('button');
-      btn.textContent = p;
-      btn.className = 'player-btn';
-      btn.onclick = () => showWord(i);
-      container.appendChild(btn);
-    });
-  }
-
-  function showWord(i) {
-    document.getElementById('playerName').textContent = players[i];
-    if (i === impostorIndex) {
-      document.getElementById('assignedWord').textContent = 'SOS EL IMPOSTOR';
-    } else {
-      document.getElementById('assignedWord').textContent = secretWord;
+    function seleccionarCategoria(cat) {
+        categoria = cat;
+        palabra = obtenerPalabra(cat);
+        document.getElementById("pantalla1").classList.add("hidden");
+        document.getElementById("pantalla2").classList.remove("hidden");
     }
-    goToScreen(4);
-  }
 
-  function backToPlayers() {
-    goToScreen(3);
-  }
+    function obtenerPalabra(cat) {
+        const listas = {
+            Animales: ["Perro", "Gato", "Elefante", "Tiburón"],
+            Comidas: ["Pizza", "Hamburguesa", "Empanada", "Sushi"],
+            Países: ["Argentina", "Brasil", "España", "Japón"]
+        };
+        const arr = listas[cat];
+        return arr[Math.floor(Math.random() * arr.length)];
+    }
 
-  function resetGame() {
-    players = [];
-    secretWord = "";
-    impostorIndex = null;
-    goToScreen(1);
-  }
+    function categoriaPersonalizada() {
+        document.getElementById("pantalla1").classList.add("hidden");
+        document.getElementById("pantallaPalabra").classList.remove("hidden");
+        document.getElementById("tituloCat").innerText = "Palabra personal";
+    }
+
+    function confirmarPalabra() {
+        palabra = document.getElementById("palabraPersonal").value.trim();
+        if (!palabra) return alert("Escribe una palabra");
+
+        document.getElementById("pantallaPalabra").classList.add("hidden");
+        document.getElementById("pantalla2").classList.remove("hidden");
+    }
+
+    function agregarJugador() {
+        let nombre = document.getElementById("nombreJugador").value.trim();
+        if (!nombre) return;
+        jugadores.push(nombre);
+        document.getElementById("listaJugadores").innerHTML += `<p>• ${nombre}</p>`;
+        document.getElementById("nombreJugador").value = "";
+    }
+
+    function empezarJuego() {
+        if (jugadores.length < 3) return alert("Mínimo 3 jugadores");
+
+        let impostor = jugadores[Math.floor(Math.random() * jugadores.length)];
+
+        jugadores.forEach(j => {
+            asignaciones[j] = j === impostor ? "IMPOSTOR" : palabra;
+        });
+
+        document.getElementById("pantalla2").classList.add("hidden");
+        document.getElementById("pantalla3").classList.remove("hidden");
+
+        let div = document.getElementById("botonesJugadores");
+        div.innerHTML = "";
+        jugadores.forEach(j => {
+            div.innerHTML += `<button onclick="mostrar('${j}')">${j}</button>`;
+        });
+    }
+
+    function mostrar(nombre) {
+        document.getElementById("mensajeJugador").innerText = asignaciones[nombre];
+        document.getElementById("pantalla3").classList.add("hidden");
+        document.getElementById("pantalla4").classList.remove("hidden");
+    }
+
+    function volver() {
+        document.getElementById("pantalla4").classList.add("hidden");
+        document.getElementById("pantalla3").classList.remove("hidden");
+    }
 </script>
-
 </body>
 </html>
