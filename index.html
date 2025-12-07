@@ -1,3 +1,16 @@
+<!--
+Juego del Impostor — Versión Completa
+Incluye:
+✔ Firebase (leer/escribir categorías y palabras en la nube)
+✔ Animaciones suaves
+✔ Modo 1 o 2 impostores
+✔ Temas (neón / oscuro / pastel)
+✔ CRUD completo (categorías y palabras)
+✔ Pantallas dinámicas
+
+NOTA: Debes ingresar tu configuración Firebase donde se indica.
+-->
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -5,182 +18,401 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Juego del Impostor</title>
 <style>
-    body {
-        margin: 0;
-        font-family: "Poppins", sans-serif;
-        background: linear-gradient(135deg, #6a00ff, #ff008c);
-        color: white;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        overflow: hidden;
-    }
+  body {
+    margin:0;
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(135deg, #1e1e1e, #000000);
+    color:white;
+    overflow-x:hidden;
+    transition: background 0.5s ease;
+  }
 
-    .container {
-        width: 90%;
-        max-width: 450px;
-        background: rgba(0, 0, 0, 0.35);
-        padding: 25px;
-        border-radius: 20px;
-        backdrop-filter: blur(10px);
-        box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
-        text-align: center;
-        animation: fadeIn 0.5s ease;
-    }
+  .container {
+    padding:20px;
+    animation: fadeIn 0.7s ease;
+  }
 
-    h1, h2 {
-        margin-bottom: 15px;
-    }
+  h1, h2, h3 {
+    text-align:center;
+    margin-bottom:20px;
+  }
 
-    button {
-        width: 100%;
-        padding: 15px;
-        margin: 10px 0;
-        border: none;
-        border-radius: 12px;
-        font-size: 18px;
-        font-weight: bold;
-        cursor: pointer;
-        background: white;
-        color: #6a00ff;
-        transition: 0.2s ease;
-    }
+  button {
+    width:100%;
+    padding:15px;
+    margin:10px 0;
+    background:#ff2fe6;
+    border:none;
+    border-radius:12px;
+    color:white;
+    font-size:18px;
+    font-weight:bold;
+    cursor:pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
 
-    button:hover {
-        transform: scale(1.05);
-        background: #ffd6f4;
-    }
+  button:hover {
+    transform:scale(1.05);
+    box-shadow:0 0 12px #ff6bf5;
+  }
 
-    input {
-        width: 100%;
-        padding: 12px;
-        margin: 10px 0;
-        border: none;
-        border-radius: 10px;
-        font-size: 16px;
-        text-align: center;
-    }
+  .hidden { display:none; }
 
-    .hidden {
-        display: none;
-    }
+  @keyframes fadeIn {
+    from { opacity:0; transform:translateY(10px); }
+    to { opacity:1; transform:translateY(0); }
+  }
 
-    @keyframes fadeIn {
-        from {opacity: 0; transform: scale(0.95);} 
-        to {opacity: 1; transform: scale(1);} 
-    }
+  input, select {
+    width:100%;
+    padding:12px;
+    margin:10px 0;
+    border-radius:8px;
+    border:none;
+    font-size:16px;
+  }
+
+  .word-box, .category-box {
+    background:#222;
+    padding:10px;
+    margin:5px 0;
+    border-radius:8px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+
+  .edit-btn, .delete-btn {
+    padding:6px 10px;
+    font-size:14px;
+    margin-left:5px;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+    color:white;
+  }
+
+  .edit-btn { background:#0099ff; }
+  .edit-btn:hover { background:#33b3ff;
+  }
+  .delete-btn { background:#ff0059; }
+  .delete-btn:hover { background:#ff337a; }
 </style>
 </head>
 <body>
-<div class="container" id="pantalla1">
-    <h1>🎭 Juego del Impostor</h1>
-    <h2>Elige una categoría</h2>
-    <button onclick="seleccionarCategoria('Animales')">Animales</button>
-    <button onclick="seleccionarCategoria('Comidas')">Comidas</button>
-    <button onclick="seleccionarCategoria('Países')">Países</button>
-    <button onclick="categoriaPersonalizada()">Personalizada ✏️</button>
+
+<div id="pantallaInicio" class="container">
+  <h1>Juego del Impostor</h1>
+
+  <h3>Selecciona una categoría</h3>
+  <div id="listaCategorias"></div>
+
+  <button onclick="mostrarCrearCategoria()">➕ Crear Categoría</button>
+
+  <h3>Temas</h3>
+  <button onclick="tema('neon')">Neón</button>
+  <button onclick="tema('oscuro')">Oscuro</button>
+  <button onclick="tema('pastel')">Pastel</button>
 </div>
 
-<div class="container hidden" id="pantallaPalabra">
-    <h2 id="tituloCat"></h2>
-    <input id="palabraPersonal" placeholder="Escribe la palabra secreta" />
-    <button onclick="confirmarPalabra()">Confirmar palabra</button>
+
+<!-- CREAR CATEGORÍA -->
+<div id="pantallaCrearCategoria" class="container hidden">
+  <h2>Nueva Categoría</h2>
+  <input id="nuevaCategoriaNombre" placeholder="Nombre de la categoría" />
+  <button onclick="crearCategoria()">Guardar</button>
+  <button onclick="volver('pantallaInicio')">Volver</button>
 </div>
 
-<div class="container hidden" id="pantalla2">
-    <h2>Ingresa los participantes</h2>
-    <input id="nombreJugador" placeholder="Nombre" />
-    <button onclick="agregarJugador()">Agregar</button>
-    <div id="listaJugadores"></div>
-    <button onclick="empezarJuego()">Comenzar</button>
+
+<!-- PALABRAS DE LA CATEGORÍA -->
+<div id="pantallaPalabras" class="container hidden">
+  <h2 id="tituloCategoria"></h2>
+
+  <div id="listaPalabras"></div>
+
+  <input id="nuevaPalabra" placeholder="Agregar palabra" />
+  <button onclick="agregarPalabra()">Agregar</button>
+
+  <button onclick="borrarCategoria()" style="background:#ff0033">Eliminar categoría</button>
+  <button onclick="iniciarJuego()">Iniciar Juego</button>
+  <button onclick="volver('pantallaInicio')">Volver</button>
 </div>
 
-<div class="container hidden" id="pantalla3">
-    <h2>Revelar palabra</h2>
-    <div id="botonesJugadores"></div>
+
+<!-- AGREGAR JUGADORES -->
+<div id="pantallaJugadores" class="container hidden">
+  <h2>Jugadores</h2>
+
+  <input id="nuevoJugador" placeholder="Nombre del jugador" />
+  <button onclick="agregarJugador()">Agregar</button>
+
+  <div id="listaJugadores"></div>
+
+  <h3>Impostores</h3>
+  <select id="cantidadImpostores">
+    <option value="1">1 Impostor</option>
+    <option value="2">2 Impostores</option>
+  </select>
+
+  <button onclick="asignarRoles()">Asignar Palabras</button>
+  <button onclick="volver('pantallaPalabras')">Volver</button>
 </div>
 
-<div class="container hidden" id="pantalla4">
-    <h1 id="mensajeJugador"></h1>
-    <button onclick="volver()">Volver</button>
+
+<!-- REVELAR PALABRA -->
+<div id="pantallaRevelar" class="container hidden">
+  <h2 id="textoJugador"></h2>
+  <button id="btnVer"></button>
+  <button onclick="volver('pantallaJugadores')">Volver</button>
 </div>
 
-<script>
-    let categoria = "";
-    let palabra = "";
-    let jugadores = [];
-    let asignaciones = {};
 
-    function seleccionarCategoria(cat) {
-        categoria = cat;
-        palabra = obtenerPalabra(cat);
-        document.getElementById("pantalla1").classList.add("hidden");
-        document.getElementById("pantalla2").classList.remove("hidden");
-    }
+<script type="module">
+// -------------------------
+// 🔥 FIRBASE CONFIG
+// -------------------------
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    function obtenerPalabra(cat) {
-        const listas = {
-            Animales: ["Perro", "Gato", "Elefante", "Tiburón"],
-            Comidas: ["Pizza", "Hamburguesa", "Empanada", "Sushi"],
-            Países: ["Argentina", "Brasil", "España", "Japón"]
-        };
-        const arr = listas[cat];
-        return arr[Math.floor(Math.random() * arr.length)];
-    }
+// 👉 Reemplaza estos datos con TU configuración
+const firebaseConfig = {
+  apiKey: "TU_API_KEY",
+  authDomain: "TU_AUTH_DOMAIN",
+  projectId: "TU_PROJECT_ID",
+  storageBucket: "TU_BUCKET",
+  messagingSenderId: "TU_SENDER",
+  appId: "TU_APPID"
+};
 
-    function categoriaPersonalizada() {
-        document.getElementById("pantalla1").classList.add("hidden");
-        document.getElementById("pantallaPalabra").classList.remove("hidden");
-        document.getElementById("tituloCat").innerText = "Palabra personal";
-    }
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-    function confirmarPalabra() {
-        palabra = document.getElementById("palabraPersonal").value.trim();
-        if (!palabra) return alert("Escribe una palabra");
+let categoriaActual = null;
+let palabras = [];
+let jugadores = [];
 
-        document.getElementById("pantallaPalabra").classList.add("hidden");
-        document.getElementById("pantalla2").classList.remove("hidden");
-    }
+// -------------------------
+// 🌐 Cargar categorías
+// -------------------------
+async function cargarCategorias() {
+  const contenedor = document.getElementById("listaCategorias");
+  contenedor.innerHTML = "Cargando...";
 
-    function agregarJugador() {
-        let nombre = document.getElementById("nombreJugador").value.trim();
-        if (!nombre) return;
-        jugadores.push(nombre);
-        document.getElementById("listaJugadores").innerHTML += `<p>• ${nombre}</p>`;
-        document.getElementById("nombreJugador").value = "";
-    }
+  const snap = await getDocs(collection(db, "categorias"));
 
-    function empezarJuego() {
-        if (jugadores.length < 3) return alert("Mínimo 3 jugadores");
+  contenedor.innerHTML = "";
+  snap.forEach(docu => {
+    const data = docu.data();
+    const div = document.createElement("div");
+    div.className = "category-box";
+    div.innerHTML = `
+      <span>${data.nombre}</span>
+      <button class="edit-btn" onclick="abrirCategoria('${docu.id}', '${data.nombre}')">Abrir</button>
+    `;
+    contenedor.appendChild(div);
+  });
+}
+window.onload = cargarCategorias;
 
-        let impostor = jugadores[Math.floor(Math.random() * jugadores.length)];
+// -------------------------
+// ➕ Crear categoría
+// -------------------------
+window.crearCategoria = async function () {
+  const nombre = document.getElementById("nuevaCategoriaNombre").value.trim();
+  if (!nombre) return;
 
-        jugadores.forEach(j => {
-            asignaciones[j] = j === impostor ? "IMPOSTOR" : palabra;
-        });
+  await addDoc(collection(db, "categorias"), {
+    nombre: nombre,
+    palabras: []
+  });
 
-        document.getElementById("pantalla2").classList.add("hidden");
-        document.getElementById("pantalla3").classList.remove("hidden");
+  volver('pantallaInicio');
+  cargarCategorias();
+}
 
-        let div = document.getElementById("botonesJugadores");
-        div.innerHTML = "";
-        jugadores.forEach(j => {
-            div.innerHTML += `<button onclick="mostrar('${j}')">${j}</button>`;
-        });
-    }
+// -------------------------
+// 📂 Abrir categoría
+// -------------------------
+window.abrirCategoria = async function (id, nombre) {
+  categoriaActual = id;
+  document.getElementById("tituloCategoria").textContent = nombre;
 
-    function mostrar(nombre) {
-        document.getElementById("mensajeJugador").innerText = asignaciones[nombre];
-        document.getElementById("pantalla3").classList.add("hidden");
-        document.getElementById("pantalla4").classList.remove("hidden");
-    }
+  const snap = await getDocs(collection(db, "categorias"));
+  snap.forEach(docu => {
+    if (docu.id === id) palabras = docu.data().palabras || [];
+  });
 
-    function volver() {
-        document.getElementById("pantalla4").classList.add("hidden");
-        document.getElementById("pantalla3").classList.remove("hidden");
-    }
+  mostrar('pantallaPalabras');
+  actualizarListaPalabras();
+}
+
+// -------------------------
+// 📌 Mostrar palabras
+// -------------------------
+function actualizarListaPalabras() {
+  const cont = document.getElementById("listaPalabras");
+  cont.innerHTML = "";
+
+  palabras.forEach((p, index) => {
+    const div = document.createElement("div");
+    div.className = "word-box";
+    div.innerHTML = `
+      <span>${p}</span>
+      <button class="edit-btn" onclick="editarPalabra(${index})">Editar</button>
+      <button class="delete-btn" onclick="eliminarPalabra(${index})">X</button>
+    `;
+    cont.appendChild(div);
+  });
+}
+
+// -------------------------
+// ➕ Agregar palabra
+// -------------------------
+window.agregarPalabra = async function () {
+  const palabra = document.getElementById("nuevaPalabra").value.trim();
+  if (!palabra) return;
+
+  palabras.push(palabra);
+  await updateDoc(doc(db, "categorias", categoriaActual), { palabras });
+
+  document.getElementById("nuevaPalabra").value = "";
+  actualizarListaPalabras();
+}
+
+// -------------------------
+// ✏️ Editar palabra
+// -------------------------
+window.editarPalabra = async function (i) {
+  const nueva = prompt("Editar palabra", palabras[i]);
+  if (!nueva) return;
+  palabras[i] = nueva;
+
+  await updateDoc(doc(db, "categorias", categoriaActual), { palabras });
+  actualizarListaPalabras();
+}
+
+// -------------------------
+// ❌ Eliminar palabra
+// -------------------------
+window.eliminarPalabra = async function (i) {
+  palabras.splice(i, 1);
+  await updateDoc(doc(db, "categorias", categoriaActual), { palabras });
+  actualizarListaPalabras();
+}
+
+// -------------------------
+// 🗑️ Eliminar categoría
+// -------------------------
+window.borrarCategoria = async function () {
+  if (!confirm("¿Seguro que quieres eliminar esta categoría?")) return;
+  await deleteDoc(doc(db, "categorias", categoriaActual));
+  volver('pantallaInicio');
+  cargarCategorias();
+}
+
+// -------------------------
+// 👥 Jugadores
+// -------------------------
+window.agregarJugador = function () {
+  const nombre = document.getElementById("nuevoJugador").value.trim();
+  if (!nombre) return;
+  jugadores.push({ nombre, rol:null });
+  document.getElementById("nuevoJugador").value = "";
+  listarJugadores();
+}
+
+function listarJugadores() {
+  const cont = document.getElementById("listaJugadores");
+  cont.innerHTML = "";
+
+  jugadores.forEach((j,i)=>{
+    const div = document.createElement("div");
+    div.className="word-box";
+    div.innerHTML = `
+      <span>${j.nombre}</span>
+      <button class="delete-btn" onclick="jugadores.splice(${i},1); listarJugadores()">X</button>
+    `;
+    cont.appendChild(div);
+  });
+}
+
+// -------------------------
+// 🎭 Asignar roles (1 o 2 impostores)
+// -------------------------
+window.asignarRoles = function () {
+  if (jugadores.length < 3) return alert("Necesitas mínimo 3 jugadores");
+
+  const cantImp = parseInt(document.getElementById("cantidadImpostores").value);
+
+  const copia = [...jugadores];
+  const impostores = [];
+
+  for (let i = 0; i < cantImp; i++) {
+    const idx = Math.floor(Math.random() * copia.length);
+    impostores.push(copia[idx].nombre);
+    copia.splice(idx,1);
+  }
+
+  jugadores = jugadores.map(j => ({
+    nombre:j.nombre,
+    rol: impostores.includes(j.nombre) ? "IMPOSTOR" : palabras[Math.floor(Math.random()*palabras.length)]
+  }));
+
+  mostrar('pantallaRevelar');
+  prepararRevelacion();
+}
+
+let jugadorActual = 0;
+
+function prepararRevelacion() {
+  if (jugadorActual >= jugadores.length) {
+    jugadorActual = 0;
+    return volver('pantallaJugadores');
+  }
+
+  const j = jugadores[jugadorActual];
+  document.getElementById("textoJugador").textContent = j.nombre;
+  const btn = document.getElementById("btnVer");
+  btn.textContent = "Ver palabra";
+  btn.onclick = function () {
+    btn.textContent = j.rol;
+    setTimeout(() => {
+      jugadorActual++;
+      prepararRevelacion();
+    }, 2000);
+  }
+}
+
+// -------------------------
+// 🔄 Cambio de pantallas
+// -------------------------
+window.mostrar = function (pantalla) {
+  document.querySelectorAll('.container').forEach(p=>p.classList.add('hidden'));
+  document.getElementById(pantalla).classList.remove('hidden');
+}
+
+window.volver = function (pantalla) {
+  mostrar(pantalla);
+}
+
+window.mostrarCrearCategoria = function(){mostrar('pantallaCrearCategory')}
+
+// -------------------------
+// 🎨 TEMAS
+// -------------------------
+window.tema = function (t) {
+  if (t === 'neon') {
+    document.body.style.background = "linear-gradient(135deg,#000428,#004e92)";
+  }
+  if (t === 'oscuro') {
+    document.body.style.background = "linear-gradient(135deg,#111,#000)";
+  }
+  if (t === 'pastel') {
+    document.body.style.background = "linear-gradient(135deg,#ffd1ff,#d1eaff)";
+  }
+}
+
 </script>
 </body>
 </html>
-
