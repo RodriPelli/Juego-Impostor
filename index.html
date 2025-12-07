@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -549,4 +550,104 @@ function renderPlayersList(){
   state.players.forEach((p, i) => {
     const div = document.createElement('div');
     div.className = 'player-item';
-    div.innerHTML = `<div class="pl
+    div.innerHTML = `<div class="player-name">${escapeHtml(p.name)}</div>
+                     <div class="player-actions">
+                        <button class="btn secondary" style="padding:8px 10px;font-weight:700" onclick="revealPlayer(${i})">Ver</button>
+                     </div>`;
+    playersList.appendChild(div);
+  });
+}
+
+/* reveal one player */
+function revealPlayer(index){
+  const player = state.players[index];
+  if(!player) return;
+  revealName.textContent = player.name;
+  if(player.role === 'IMPOSTOR'){
+    revealRole.textContent = 'SOS EL IMPOSTOR';
+    revealRole.classList.remove('word');
+    revealRole.classList.add('impostor');
+    revealRole.style.background = 'linear-gradient(90deg,#ff4d6d,#ff7a5a)';
+    revealRole.style.color = '#fff';
+  } else {
+    revealRole.textContent = player.role;
+    revealRole.classList.remove('impostor');
+    revealRole.classList.add('word');
+    revealRole.style.background = 'linear-gradient(90deg,#ffd66b,#ff9a3d)';
+    revealRole.style.color = '#111';
+  }
+  // mark revealed
+  state.players[index].revealed = true;
+  revealModal.style.display = 'block';
+}
+
+/* hide reveal */
+btnHideReveal.addEventListener('click', ()=>{
+  revealModal.style.display = 'none';
+});
+
+/* end round / reset players */
+btnEndRound.addEventListener('click', ()=>{
+  if(!confirm('Finalizar ronda y limpiar jugadores?')) return;
+  state.players = [];
+  state.secretWord = null;
+  state.active = false;
+  state.currentRevealIndex = 0;
+  playersListCard.style.display = 'none';
+  playersList.innerHTML = '';
+  playersInput.value = '';
+  revealModal.style.display = 'none';
+});
+
+/* new round (keep category) */
+btnNewRound.addEventListener('click', ()=>{
+  if(!state.category){
+    alert('Primero elegí una categoría.');
+    return;
+  }
+  if(!confirm('Iniciar nueva ronda (se borrarán los jugadores cargados)?')) return;
+  state.players = [];
+  playersListCard.style.display = 'none';
+  playersList.innerHTML = '';
+  playersInput.value = '';
+});
+
+/* utils */
+function shuffleArray(a){
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+}
+
+/* small helper to escape text */
+function escapeHtml(text){
+  const map = { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#039;' };
+  return text.replace(/[&<>"']/g, m => map[m]);
+}
+
+/* keyboard shortcut: press C to focus search */
+document.addEventListener('keydown', (e)=>{
+  if(e.key.toLowerCase() === 'c'){ searchInput.focus(); }
+});
+
+/* initial selected category: pick first */
+(function init(){
+  const keys = Object.keys(CATEGORIES);
+  if(keys.length) state.category = keys[0];
+  renderCategories();
+  updateSelectedCategory();
+})();
+
+/* renderCategories function (used above) */
+function renderCategories(){
+  categoriesGrid.innerHTML = '';
+  Object.keys(CATEGORIES).forEach(name=>{
+    categoriesGrid.appendChild(createCategoryButton(name));
+  });
+}
+
+</script>
+
+</body>
+</html>
