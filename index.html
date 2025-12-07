@@ -4,286 +4,322 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Juego del Impostor — Simple</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
-
-
+<title>Juego del Impostor — Ultra</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700;800&display=swap" rel="stylesheet">
 
 <style>
-  * {
-    box-sizing: border-box;
+  /* -------------------------
+     RESET + BASE
+     ------------------------- */
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;
+    background:linear-gradient(180deg,#f6fbff,#eaf5ff);
+    color:#0b2545;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
   }
 
-  body {
-    margin: 0;
-    padding: 0;
-    font-family: "Poppins", sans-serif;
-    background: #050505;
-    color: #fff;
-    display: flex;
-    justify-content: center;
+  /* -------------------------
+     APP LAYOUT
+     ------------------------- */
+  .app {
+    width:100%;
+    max-width:1020px;
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow: 0 18px 60px rgba(12,36,80,0.14);
+    display:grid;
+    grid-template-columns: 1fr 420px;
+    gap:18px;
+    background: linear-gradient(180deg, #ffffff, #f4fbff);
   }
 
-  /* === CONTENEDOR GENERAL === */
-  .container {
-    width: 100%;
-    max-width: 650px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
+  @media(max-width:980px){
+    .app{ grid-template-columns: 1fr; max-width:760px; }
   }
 
-  h1, h2, h3 {
-    text-align: center;
-    margin: 0;
-    padding-bottom: 10px;
+  /* -------------------------
+     SPLASH / HEADER
+     ------------------------- */
+  .splash {
+    grid-column:1/-1;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding:22px;
+    background: linear-gradient(90deg,#fff,#f0f9ff);
+    border-bottom: 1px solid rgba(10,30,60,0.04);
   }
 
-  /* === SECCIONES / BLOQUES === */
-  .section {
-    background: #111;
-    padding: 22px;
-    border-radius: 16px;
-    box-shadow: 0 0 12px #00ffd544;
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-    animation: fadeIn 0.4s ease-in-out;
+  .logo {
+    display:flex;
+    gap:12px;
+    align-items:center;
   }
 
-  /* === BOTONES === */
-  button {
-    width: 100%;
-    padding: 14px;
-    border: none;
-    border-radius: 12px;
-    font-size: 1.2rem;
-    font-weight: 700;
-    background: linear-gradient(45deg, #00ffc8, #0088ff);
-    color: #000;
-    cursor: pointer;
-    transition: 0.25s;
+  .logo svg { width:56px; height:56px; transform:rotate(-8deg); }
+  .title {
+    font-weight:800;
+    font-size:20px;
+    line-height:1;
+    color:#032b51;
+  }
+  .subtitle { font-size:12px; opacity:0.8; color:#174062 }
+
+  /* -------------------------
+     LEFT PANEL (game flow)
+     ------------------------- */
+  .left { padding:20px; display:flex; flex-direction:column; gap:14px; }
+
+  .card {
+    background: linear-gradient(180deg,#ffffff,#f7fbff);
+    border-radius:12px;
+    padding:14px;
+    box-shadow: 0 8px 28px rgba(8,30,60,0.05);
+    border: 1px solid rgba(10,40,80,0.03);
   }
 
-  button:hover {
-    transform: scale(1.05);
-    opacity: 0.9;
+  label{ display:block; font-size:13px; margin-bottom:8px; color:#09304a; font-weight:600;}
+
+  select,input,textarea {
+    width:100%;
+    padding:12px 14px;
+    border-radius:10px;
+    border:1px solid rgba(15,50,90,0.06);
+    background: #fff;
+    font-size:14px;
+    color:#05273f;
+  }
+  textarea { resize:vertical; min-height:90px; }
+
+  .row { display:flex; gap:10px; align-items:center; }
+  .row .col { flex:1 }
+
+  .btn {
+    display:inline-block;
+    padding:12px 14px;
+    border-radius:10px;
+    border:none;
+    cursor:pointer;
+    font-weight:700;
+    color:#05273f;
+    background: linear-gradient(90deg,#a1d8ff,#86f0ff);
+    box-shadow: 0 8px 18px rgba(30,140,200,0.08);
+    transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .btn:hover{ transform: translateY(-2px); }
+
+  .btn.secondary {
+    background: transparent;
+    border: 1px solid rgba(5,39,63,0.08);
+    color:#05273f;
+    font-weight:700;
   }
 
-  /* === INPUTS & SELECT === */
-  select, input {
-    width: 100%;
-    padding: 13px;
-    border-radius: 12px;
-    border: none;
-    font-size: 1.05rem;
+  .muted { color:#527a93; font-size:13px }
+
+  /* players list */
+  .players-list { display:flex; flex-direction:column; gap:8px; margin-top:8px }
+  .player-item {
+    padding:10px 12px;
+    border-radius:10px;
+    display:flex; justify-content:space-between; align-items:center;
+    background:linear-gradient(180deg,#f8fdff,#eef9ff);
+    border:1px solid rgba(13,70,110,0.03);
+  }
+  .player-item button { padding:8px 10px; border-radius:8px; font-weight:700; }
+
+  /* reveal grid */
+  .reveal-grid { display:grid; grid-template-columns: repeat(2,1fr); gap:10px; }
+  @media(max-width:480px){ .reveal-grid{ grid-template-columns: 1fr } }
+
+  .reveal-card{
+    padding:12px; border-radius:10px; background:linear-gradient(180deg,#ffffff,#eef8ff);
+    border:1px solid rgba(6,40,80,0.04); text-align:center; cursor:pointer;
+    transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .reveal-card:hover{ transform: translateY(-4px); box-shadow: 0 12px 30px rgba(2,34,60,0.08) }
+
+  /* word modal */
+  .modal {
+    position:fixed; left:50%; top:50%; transform:translate(-50%,-50%) scale(.98); z-index:9999;
+    min-width:260px; max-width:92%; padding:18px; border-radius:14px; text-align:center;
+    background: linear-gradient(180deg,#fff,#f2fbff); box-shadow: 0 40px 120px rgba(4,18,40,0.38);
+    border: 1px solid rgba(10,40,80,0.06);
+    opacity:0; pointer-events:none;
+    transition: opacity .18s ease, transform .18s cubic-bezier(.2,.9,.3,1);
+  }
+  .modal.show{ opacity:1; pointer-events:auto; transform:translate(-50%,-50%) scale(1); }
+  .role { font-weight:900; font-size:20px; padding:14px; border-radius:10px; display:inline-block; margin:8px 0; }
+  .role.impostor { background: linear-gradient(90deg,#ff6b6b,#ff9a9a); color:white; }
+  .role.word { background: linear-gradient(90deg,#ffe08a,#ffb25c); color:#082028; }
+
+  /* footer small */
+  .footer { padding:10px; text-align:center; font-size:13px; color:#315b79; opacity:0.9; }
+
+  /* theme dark auto (prefers-color-scheme) */
+  @media (prefers-color-scheme: dark) {
+    body { background: linear-gradient(180deg,#071028,#001220); color:#e7f6ff; }
+    .app { background: linear-gradient(180deg,#051226,#042033); box-shadow: 0 30px 80px rgba(0,0,0,0.6); }
+    .splash { background: linear-gradient(90deg,#07112a,#00101a); border-bottom:1px solid rgba(255,255,255,0.03); }
+    .card, .player-item, .reveal-card { background: linear-gradient(180deg,#061425,#041522); border:1px solid rgba(255,255,255,0.03); color:#dbeeff }
+    .btn { color:#001826; background: linear-gradient(90deg,#2a9bd8,#73e6ff); }
+    .btn.secondary { color:#dbeeff; border:1px solid rgba(255,255,255,0.03); }
+    .logo text, .title { fill:#cfeeff; color:#cfeeff }
   }
 
-  /* === LISTA DE JUGADORES === */
-  .players-list {
-    background: #0d0d0d;
-    padding: 16px;
-    border-radius: 16px;
-    text-align: center;
-    font-size: 1.2rem;
-    font-weight: 600;
-    box-shadow: 0 0 10px #00c8ff66;
+  /* small screens adjustments */
+  @media(max-width:520px){
+    .app{ padding:12px; gap:12px }
+    .splash{ flex-direction:column; align-items:flex-start; gap:8px; padding:14px }
+    .logo svg{ width:48px; height:48px }
+    .title{ font-size:18px }
+    .left{ padding:12px }
+    .card{ padding:12px }
   }
-
-  .player-button {
-    padding: 14px;
-    margin: 8px 0;
-    border-radius: 14px;
-    background: #1c1c1c;
-    border: 2px solid #00ffc877;
-    font-size: 1.1rem;
-    cursor: pointer;
-    transition: 0.2s;
-  }
-
-  .player-button:hover {
-    background: #00ffc822;
-    transform: scale(1.03);
-  }
-
-  /* === PALABRA MOSTRADA === */
-  .word-box {
-    background: #0e0e0e;
-    padding: 25px;
-    border-radius: 18px;
-    text-align: center;
-    font-size: 1.6rem;
-    font-weight: 700;
-    box-shadow: 0 0 14px #00ffd544;
-    animation: pop 0.35s ease-out;
-  }
-
-  /* === OCULTO === */
-  .hidden-screen {
-    display: none;
-  }
-
-  /* === ANIMACIONES === */
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(15px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  @keyframes pop {
-    0% { transform: scale(0.6); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
-  }
-
-  /* === RESPONSIVE === */
-  @media (max-width: 480px) {
-    h1 { font-size: 1.6rem; }
-    h2 { font-size: 1.3rem; }
-    h3 { font-size: 1.1rem; }
-
-    .section {
-      padding: 16px;
-      gap: 14px;
-    }
-
-    button {
-      padding: 12px;
-      font-size: 1rem;
-    }
-
-    .word-box {
-      font-size: 1.25rem;
-      padding: 20px;
-    }
-
-    .player-button {
-      font-size: 1rem;
-      padding: 10px;
-    }
-  }
-
-  @media (min-width: 768px) {
-    .container {
-      max-width: 720px;
-    }
-
-    .section {
-      padding: 26px;
-    }
-
-    button {
-      font-size: 1.3rem;
-      padding: 16px;
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .container {
-      max-width: 850px;
-    }
-  }
-
 </style>
-
-
-
-
-
 </head>
+
 <body>
-  <div class="app" id="app">
-    <header class="app-header" style="grid-column:1/-1">
-      <div>
-        <h1>🎭 Juego del Impostor</h1>
-        <p>Todo en una sola pantalla: elegí categoría, poné jugadores y revelen en el mismo celular.</p>
-      </div>
-     
-
-    <!-- LEFT: controls -->
-    <div class="panel controls">
-      <div class="card">
-        <label for="categorySelect">Categoría seleccionada</label>
-        <div id="selectedCategory" style="padding:10px;border-radius:10px;background:var(--glass);font-weight:700">Ninguna</div>
-        <div style="display:flex;gap:8px;margin-top:10px">
-          <button class="btn" id="btnStartPlayers">Ingresar jugadores</button>
-          <button class="btn secondary" id="btnReset" title="Reiniciar todo">Reiniciar</button>
+  <div class="app" role="application" aria-label="Juego del impostor">
+    <!-- SPLASH / HEADER -->
+    <div class="splash">
+      <div class="logo" aria-hidden="true">
+        <!-- simple playful SVG logo -->
+        <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="logo">
+          <defs>
+            <linearGradient id="g1" x1="0" x2="1" y1="0" y2="1">
+              <stop offset="0" stop-color="#7bd3ff"/>
+              <stop offset="1" stop-color="#9df7c4"/>
+            </linearGradient>
+          </defs>
+          <rect x="6" y="6" width="108" height="108" rx="20" fill="url(#g1)" />
+          <text x="18" y="74" font-family="Poppins" font-weight="800" font-size="46" fill="#05273f">IM</text>
+        </svg>
+        <div>
+          <div class="title">Juego del Impostor</div>
+          <div class="subtitle">Rápido • Offline • Multiplayers en un mismo celular</div>
         </div>
       </div>
 
-      <div class="card" id="playersCard" style="display:none">
-        <label>Jugadores (un nombre por línea)</label>
-        <textarea id="playersInput" rows="6" placeholder="Ej: María&#10;Juan&#10;Paula" style="resize:none"></textarea>
-
-        <label style="margin-top:6px">Cantidad de impostores</label>
-        <select id="impostorsSelect">
-          <option value="1">1 impostor</option>
-          <option value="2">2 impostores</option>
+      <div style="display:flex;gap:10px;align-items:center">
+        <div class="muted">Tema</div>
+        <select id="themeSelect" aria-label="Seleccionar tema">
+          <option value="auto">Automático</option>
+          <option value="light">Claro</option>
+          <option value="dark">Oscuro</option>
         </select>
+      </div>
+    </div>
 
-        <div style="display:flex;gap:8px;margin-top:8px">
-          <button class="btn" id="btnAssign">Asignar roles</button>
-          <button class="btn secondary" id="btnCancelPlayers">Cancelar</button>
+    <!-- LEFT: flow -->
+    <div class="left">
+      <!-- SELECT / RANDOM -->
+      <div class="card" style="display:flex;flex-direction:column;gap:12px">
+        <label for="categorySelect">Elegí categoría</label>
+        <select id="categorySelect" aria-label="Seleccionar categoría"></select>
+
+        <div class="row">
+          <button id="btnUseCategory" class="btn">Usar categoría</button>
+          <button id="btnRandom" class="btn secondary">Aleatorio 🎲</button>
+        </div>
+
+        <div style="display:flex;gap:8px;align-items:center">
+          <label style="margin:0;min-width:120px">Temporizador (seg)</label>
+          <input id="timerInput" type="number" min="0" value="8" style="width:100px" />
+          <div style="flex:1;text-align:right" class="muted">0 = sin timer</div>
         </div>
       </div>
 
-      <div class="card" id="playersListCard" style="display:none">
-        <label>Lista de jugadores</label>
-        <div class="players-list" id="playersList"></div>
-        <div style="display:flex;gap:8px;margin-top:10px">
-          <button class="btn" id="btnNewRound">Nueva ronda</button>
-        </div>
-      </div>
-
+      <!-- players input -->
       <div class="card">
+        <label for="playersTextarea">Jugadores (un nombre por línea)</label>
+        <textarea id="playersTextarea" placeholder="Ej: María&#10;Juan&#10;Paula" aria-label="Jugadores"></textarea>
+
+        <div style="display:flex;gap:8px;align-items:center">
+          <label style="margin:0;min-width:140px">Cant. impostores</label>
+          <select id="impostorsCount" style="width:120px">
+            <option value="1">1 impostor</option>
+            <option value="2">2 impostores</option>
+          </select>
+          <div style="flex:1"></div>
+        </div>
+
+        <div style="display:flex;gap:8px">
+          <button id="btnAssignRoles" class="btn">Asignar roles</button>
+          <button id="btnReset" class="btn secondary">Reiniciar</button>
+        </div>
+      </div>
+
+      <!-- players list & controls -->
+      <div class="card">
+        <label>Jugadores (revelar)</label>
+        <div id="playersContainer" class="players-list" style="min-height:60px">No asignados</div>
+
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button id="btnNewRound" class="btn secondary">Volver a jugar</button>
+          <button id="btnEndGame" class="btn secondary">Finalizar</button>
+        </div>
+      </div>
+
+      <div class="card" style="display:flex;flex-direction:column;gap:8px">
         <label>Instrucciones rápidas</label>
-        <ol style="padding-left:18px;margin:8px 0 0 0;font-size:14px;line-height:1.4;opacity:0.95">
-          <li>Elegí categoría desde la lista derecha.</li>
-          <li>Ingresá jugadores y elegí 1 o 2 impostores.</li>
-          <li>Tocá cada nombre para ver la palabra (o impostor).</li>
-          <li>Volvé para que el siguiente vea su palabra.</li>
+        <ol style="margin:6px 0 0 18px; color:#234f67">
+          <li>Elegí categoría o presioná Aleatorio.</li>
+          <li>Escribí jugadores, uno por línea.</li>
+          <li>Elige 1 o 2 impostores y presioná Asignar roles.</li>
+          <li>Tocá el nombre para ver la palabra (ocultar al volver).</li>
         </ol>
       </div>
     </div>
 
-    <!-- RIGHT: categories + words preview -->
-    <div class="panel right">
-      <div class="card">
-        <label>Buscar categoría</label>
-        <input id="searchCat" type="text" placeholder="Buscar... (ej: comidas, fútbol, lugares)" />
-      </div>
+    <!-- RIGHT: categories + preview -->
+    <aside style="padding:20px; display:flex;flex-direction:column;gap:16px">
+      <div class="card" style="flex:1; display:flex; flex-direction:column; gap:12px">
+        <label for="searchCat">Buscar categorías</label>
+        <input id="searchCat" placeholder="Buscar..." />
 
-      <div class="card">
-        <label>Categorías</label>
-        <div style="margin-top:10px" class="categories-grid" id="categoriesGrid"></div>
+        <div style="margin-top:6px; overflow:auto; max-height:420px; padding-right:6px">
+          <div id="categoriesList" style="display:grid; grid-template-columns:repeat(1,1fr); gap:8px"></div>
+        </div>
       </div>
 
       <div class="card" id="previewCard" style="display:none">
-        <label>Vista rápida — palabras de la categoría</label>
+        <label>Preview — palabras</label>
         <div id="previewWords" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px"></div>
+      </div>
+    </aside>
+
+    <!-- modal (word) -->
+    <div id="modal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+        <div id="modalName" style="font-weight:800;font-size:18px;color:#062a44"></div>
+        <div id="modalRole" class="role">PALABRA</div>
+        <div style="display:flex;gap:10px;width:100%;justify-content:center">
+          <button id="btnModalHide" class="btn secondary">Ocultar</button>
+          <button id="btnModalNext" class="btn">Siguiente</button>
+        </div>
       </div>
     </div>
 
   </div>
 
-  <!-- reveal modal -->
-  <div id="revealModal" class="reveal" style="display:none">
-    <h2 id="revealName">Nombre</h2>
-    <div id="revealRole" class="role">Palabra</div>
-    <div style="display:flex;gap:8px">
-      <button class="btn" id="btnHideReveal">Ocultar</button>
-      <button class="btn secondary" id="btnEndRound">Finalizar ronda</button>
-    </div>
-  </div>
-
-  <footer class="small" style="grid-column:1/-1">Hecho con ❤️</footer>
+  <div style="height:10px"></div>
+  <div class="footer">Hecho con 💙 — guardá el archivo y subilo a tu hosting</div>
 
 <script>
 /* ============================
-   Simple, offline version
-   20 categories × 20 words each (argentina-oriented)
+   CATEGORÍAS (20 x 20 palabras)
+   Mantener orientación argentina
    ============================ */
-
 const CATEGORIES = {
   "Comidas Argentinas": [
     "Asado","Empanada","Milanesa","Fugazzeta","Pizza al molde","Locro","Humita","Tortilla",
@@ -291,357 +327,417 @@ const CATEGORIES = {
     "Guiso","Ravioles","Sorrentinos","Tarta de jamón","Pastel de papas"
   ],
   "Postres & Facturas": [
-    "Dulce de leche","Alfajor","Pastafrola","Chocotorta","Flan","Helado","Factura medialuna",
+    "Dulce de leche","Alfajor","Pastafrola","Chocotorta","Flan","Helado","Medialuna",
     "Pionono","Brownie","Torta Rogel","Masas finas","Crema pastelera","Budín","Panqueque",
     "Lemon pie","Mousse","Galletitas","Profiteroles","Semifreddo","Tarta de ricota"
   ],
   "Bebidas & Mate": [
     "Mate","Yerba","Fernet","Coca Cola","Gancia","Vino tinto","Vino blanco","Cerveza",
-    "Agua","Jugo natural","Café","Capuchino","Té","Chamomile","Submarino","Leche",
-    "Batido","Jugo de naranja","Sidra","Clericot"
+    "Agua","Jugo","Café","Capuchino","Té","Submarino","Leche","Batido","Sidra","Clericot","Malteada","Jugo de naranja"
   ],
   "Lugares Argentinos": [
     "Bariloche","Mar del Plata","Mendoza","Córdoba","Salta","Jujuy","Iguazú","Ushuaia",
     "El Calafate","La Plata","Rosario","Tandil","San Juan","San Luis","Corrientes",
-    "Posadas","Neuquén","Trelew","Puerto Madryn","Paraná"
+    "Posadas","Neuquén","Puerto Madryn","Trelew","Paraná"
   ],
   "Provincias & Ciudades": [
-    "Buenos Aires (provincia)","Ciudad Autónoma de Buenos Aires","Santa Fe","Mendoza",
-    "Tucumán","Salta","Jujuy","Misiones","Chaco","Formosa","Corrientes","Entre Ríos",
-    "San Luis","San Juan","La Rioja","Catamarca","Neuquén","Río Negro","Chubut","Santa Cruz"
+    "Buenos Aires","CABA","Santa Fe","Mendoza","Tucumán","Salta","Jujuy","Misiones","Chaco","Formosa",
+    "Corrientes","Entre Ríos","San Luis","San Juan","La Rioja","Catamarca","Neuquén","Río Negro","Chubut","Santa Cruz"
   ],
   "Equipos de Fútbol": [
-    "Boca Juniors","River Plate","Racing Club","Independiente","San Lorenzo",
-    "Estudiantes","Gimnasia y Esgrima","Newell's Old Boys","Rosario Central",
-    "Talleres","Belgrano","Lanús","Argentinos Juniors","Vélez Sarsfield",
-    "Huracán","Colón","Unión","Defensa y Justicia","Banfield","Tigre"
+    "Boca Juniors","River Plate","Racing Club","Independiente","San Lorenzo","Estudiantes",
+    "Gimnasia","Newell's","Rosario Central","Talleres","Belgrano","Lanús","Argentinos Juniors",
+    "Vélez","Huracán","Colón","Unión","Defensa y Justicia","Banfield","Tigre"
   ],
   "Música Argentina": [
-    "Soda Stereo","Charly García","Fito Páez","Spinetta","Los Fabulosos Cadillacs",
-    "Patricio Rey","Andrés Calamaro","Luis Alberto Spinetta","Los Pericos","La Renga",
-    "Los Auténticos Decadentes","Babasonicos","Duki","Wos","SOLO","Tini Stoessel",
-    "Lali","Sandro","Mercedes Sosa","Atahualpa Yupanqui"
+    "Soda Stereo","Charly García","Fito Páez","Spinetta","Las Pelotas","Patricio Rey","Andrés Calamaro",
+    "Los Fabulosos Cadillacs","Babasonicos","Duki","Wos","Bizarrap","Tini","Lali","Sandro",
+    "Mercedes Sosa","Atahualpa","Los Auténticos Decadentes","La Renga","Ciro"
   ],
-  "Programas de TV": [
-    "Casados con Hijos","ShowMatch","Gran Hermano","Los Simuladores","Casi Ángeles",
-    "Polémica en el Bar","Intrusos","MasterChef","Bake Off","Pasapalabra",
-    "Cocineros Argentinos","Telefe Noticias","TN","El Trece Noticias","La Peña del Morfi",
-    "El Marginal","Graduados","Mi amor, mi amor","Avenida Brasil","Okupas"
+  "Programas & Series": [
+    "Casados con Hijos","ShowMatch","Gran Hermano","Los Simuladores","Casi Ángeles","Okupas","El Marginal",
+    "Polémica en el Bar","Intrusos","MasterChef","Bake Off","Pasapalabra","Graduados","Avenida Brasil",
+    "Telefe Noticias","TN","La Peña del Morfi","Mi amor, mi amor","Sandro (serie)","El Host"
   ],
-  "Cosas de la Casa": [
-    "Heladera","Cocina","Microondas","Televisor","Silla","Mesa","Cama","Almohada",
-    "Sábanas","Toalla","Ducha","Bacha","Lavarropa","Plancha","Tostadora","Lámpara",
-    "Espejo","Cortinas","Ventana","Puerta"
+  "Cosas del Hogar": [
+    "Heladera","Cocina","Microondas","Televisor","Silla","Mesa","Cama","Almohada","Sábanas","Toalla",
+    "Ducha","Lavarropa","Plancha","Tostadora","Lampara","Espejo","Cortinas","Ventana","Puerta","Bacha"
   ],
-  "Objetos Varios": [
-    "Celular","Cargador","Auriculares","Control remoto","Llave","Mochila","Bolso",
-    "Parlante","Bicicleta","Monopatín","Reloj","Cuchillo","Taza","Vaso","Libro",
-    "Cuaderno","Bolígrafo","Cámara","Lupa","Sombrero"
+  "Objetos Personales": [
+    "Celular","Cargador","Auriculares","Control remoto","Llave","Mochila","Bolso","Reloj",
+    "Anteojos","Billetera","Cartera","Diadema","Parlante","Camara","Zapatos","Zapatillas",
+    "Pulsera","Sombrero","Bufanda","Cinturón"
   ],
   "Animales": [
-    "Perro","Gato","Caballo","Vaca","Oveja","Gallina","Conejo","Tortuga","Loro",
-    "Delfín","Tigre","León","Mono","Zorro","Hámster","Pez","Gorila","Cebra","Pingüino","Serpiente"
+    "Perro","Gato","Caballo","Vaca","Oveja","Gallina","Conejo","Tortuga","Loro","Delfín",
+    "Tiburón","Mono","León","Tigre","Zorro","Lobo","Hurón","Puma","Pingüino","Cebra"
   ],
   "Profesiones": [
-    "Doctor","Enfermero","Maestro","Profesor","Abogado","Arquitecto","Ingeniero",
-    "Carpintero","Electricista","Plomero","Cocinero","Panadero","Farmacéutico",
-    "Periodista","Actor","Actriz","Cantante","Dentista","Diseñador","Fotógrafo"
+    "Doctor","Enfermero","Maestro","Profesor","Abogado","Ingeniero","Arquitecto","Plomero",
+    "Electricista","Carpintero","Cocinero","Panadero","Periodista","Actor","Cantante","Bailarín",
+    "Diseñador","Fotógrafo","Dentista","Farmacéutico"
   ],
   "Transporte": [
-    "Colectivo","Subte","Tren","Auto","Remís","Taxi","Bicicleta","Moto","Avión",
-    "Barco","Ferry","Camión","Tráiler","Patineta","Monopatín","Metrobus","Tranvía","Helicóptero","Cabify","Uber"
+    "Colectivo","Subte","Tren","Auto","Remis","Taxi","Bicicleta","Moto","Avión",
+    "Barco","Ferry","Camión","Patineta","Monopatín","Metrobus","Cabify","Uber","Helicóptero","Tranvía","Furgón"
   ],
   "Ropa & Accesorios": [
-    "Camisa","Remera","Pantalón","Short","Pollera","Vestido","Zapatos","Zapatillas",
-    "Medias","Buzo","Campera","Gorro","Bufanda","Cinturón","Corbata","Ojotas","Sandalias","Bata","Pijama","Anteojos"
+    "Remera","Camisa","Pantalón","Short","Pollera","Vestido","Zapatos","Zapatillas",
+    "Medias","Buzo","Campera","Gorro","Bufanda","Cinturón","Corbata","Ojotas","Pijama","Traje","Saco","Chaleco"
   ],
   "Frutas & Verduras": [
-    "Manzana","Banana","Naranja","Mandarina","Pomelo","Pera","Durazno","Ciruela",
-    "Cereza","Uva","Melón","Sandía","Kiwi","Ananá","Tomate","Lechuga","Zanahoria","Papa","Cebolla","Ajo"
+    "Manzana","Banana","Naranja","Mandarina","Pomelo","Pera","Durazno","Ciruela","Cereza","Uva",
+    "Melón","Sandía","Kiwi","Ananá","Tomate","Lechuga","Zanahoria","Papa","Cebolla","Ajo"
   ],
   "Herramientas": [
-    "Martillo","Destornillador","Taladro","Sierra","Alicate","Llave inglesa","Regla",
-    "Cinta métrica","Nivel","Cizalla","Lima","Formón","Cepillo","Pernos","Tornillos","Clavos","Broca","Sierra de mano","Caja de herramientas","Engrampadora"
+    "Martillo","Destornillador","Taladro","Sierra","Alicate","Llave inglesa","Regla","Cinta métrica",
+    "Nivel","Cizalla","Lima","Formón","Cepillo","Pernos","Tornillos","Clavos","Broca","Sierra de mano","Engrampadora","Soplete"
   ],
   "Juegos & Pasatiempos": [
-    "Ajedrez","Dominó","Cartas","Truco","Penal","Fútbol de mesa","Metegol","Ruleta",
-    "Bingo","Pictionary","Scrabble","Monopoly","Ludo","Videojuegos","PlayStation","Xbox","PC Gaming","Naipes","Solitario","Jenga"
+    "Ajedrez","Dominó","Truco","Cartas","Metegol","PlayStation","Xbox","Nintendo","Monopoly","Scrabble",
+    "Pictionary","Jenga","Bingo","Puzzle","Naipes","Penal","Ruleta","Solitario","Saltar la soga","Damas"
   ],
   "Tecnología & Apps": [
-    "WhatsApp","Instagram","Facebook","Twitter","TikTok","YouTube","Mercado Libre",
-    "Pago Fácil","Homebanking","Banco","Spotify","Netflix","Zoom","Meet","Telegram",
-    "Google Maps","Waze","Mercadopago","CABAL","Garbarino"
+    "WhatsApp","Instagram","Facebook","TikTok","YouTube","Mercado Libre","Google Maps","Waze",
+    "Spotify","Netflix","Zoom","Meet","Telegram","Homebanking","Mercadopago","Netflix Party","GitHub","Trello","Slack","Notion"
   ],
-  "Películas & Series": [
-    "Relatos salvajes","El secreto de sus ojos","Nueve reinas","Camila","El hijo de la novia",
-    "La odisea de los giles","El clan","Historia de un clan","El secreto","Los sonámbulos",
-    "Okupas","El marginal","Cuna de Lobos","Sabrina","Stranger Things","La casa de papel","Gladiador","Titanic","Volver","Pulp Fiction"
+  "Películas & Cine": [
+    "Relatos salvajes","El secreto de sus ojos","Nueve reinas","La odisea de los giles","El clan",
+    "El hijo de la novia","El secreto","Cuna de lobos","Okupas","El marginal","El secreto de Mar","Volver",
+    "El hijo de la novia","La historia oficial","El aura","El abrazo partido","El médico","El corredor","Relatos 2","La odisea"
   ]
 };
 
-/* ---------- state ---------- */
+/* ============================
+   STATE
+   ============================ */
 let state = {
   category: null,
-  players: [],      // array of {name, role}
-  secretWord: null,
+  word: null,
+  players: [],   // array of {name, role, seen}
   impostorCount: 1,
-  currentRevealIndex: 0,
-  active: false
+  timerSeconds: 8,
+  revealIndex: 0,
+  roundActive: false
 };
 
-/* ---------- DOM refs ---------- */
-const categoriesGrid = document.getElementById('categoriesGrid');
-const selectedCategoryEl = document.getElementById('selectedCategory');
-const previewCard = document.getElementById('previewCard');
-const previewWords = document.getElementById('previewWords');
-const searchInput = document.getElementById('searchCat');
+/* ============================
+   DOM refs
+   ============================ */
+const categorySelect = document.getElementById('categorySelect');
+const btnUseCategory = document.getElementById('btnUseCategory');
+const btnRandom = document.getElementById('btnRandom');
+const timerInput = document.getElementById('timerInput');
 
-const btnStartPlayers = document.getElementById('btnStartPlayers');
+const playersTextarea = document.getElementById('playersTextarea');
+const impostorsCount = document.getElementById('impostorsCount');
+const btnAssignRoles = document.getElementById('btnAssignRoles');
 const btnReset = document.getElementById('btnReset');
 
-const playersCard = document.getElementById('playersCard');
-const playersInput = document.getElementById('playersInput');
-const btnAssign = document.getElementById('btnAssign');
-const btnCancelPlayers = document.getElementById('btnCancelPlayers');
-const impostorsSelect = document.getElementById('impostorsSelect');
-
-const playersListCard = document.getElementById('playersListCard');
-const playersList = document.getElementById('playersList');
+const playersContainer = document.getElementById('playersContainer');
 const btnNewRound = document.getElementById('btnNewRound');
+const btnEndGame = document.getElementById('btnEndGame');
 
-const revealModal = document.getElementById('revealModal');
-const revealName = document.getElementById('revealName');
-const revealRole = document.getElementById('revealRole');
-const btnHideReveal = document.getElementById('btnHideReveal');
-const btnEndRound = document.getElementById('btnEndRound');
+const categoriesList = document.getElementById('categoriesList');
+const searchCat = document.getElementById('searchCat');
+const previewCard = document.getElementById('previewCard');
+const previewWords = document.getElementById('previewWords');
 
-/* ---------- helpers ---------- */
-function createCategoryButton(name){
-  const el = document.createElement('div');
-  el.className = 'cat-btn';
-  el.innerHTML = `<div class="title">${name}</div><div class="count">${CATEGORIES[name].length} palabras</div>`;
-  el.onclick = () => selectCategory(name);
-  return el;
+const modal = document.getElementById('modal');
+const modalName = document.getElementById('modalName');
+const modalRole = document.getElementById('modalRole');
+const btnModalHide = document.getElementById('btnModalHide');
+const btnModalNext = document.getElementById('btnModalNext');
+
+const themeSelect = document.getElementById('themeSelect');
+
+/* ============================
+   INIT
+   ============================ */
+function init(){
+  // populate category select & list
+  Object.keys(CATEGORIES).forEach(cat=>{
+    const opt = document.createElement('option'); opt.value = cat; opt.textContent = cat;
+    categorySelect.appendChild(opt);
+  });
+  renderCategoriesList();
+  // set defaults
+  if(categorySelect.options.length>0) {
+    state.category = categorySelect.value;
+    updatePreview();
+  }
+  // theme
+  applyTheme('auto');
 }
-function updateSelectedCategory(){
-  selectedCategoryEl.textContent = state.category ? state.category : 'Ninguna';
-  if(state.category){
-    previewCard.style.display = 'block';
-    previewWords.innerHTML = '';
-    (CATEGORIES[state.category] || []).slice(0,20).forEach(w=>{
-      const span = document.createElement('span');
-      span.style.padding='6px 10px';
-      span.style.borderRadius='8px';
-      span.style.background='rgba(255,255,255,0.04)';
-      span.style.fontSize='13px';
-      span.style.margin='4px';
-      span.textContent=w;
-      previewWords.appendChild(span);
-    });
-  } else {
-    previewCard.style.display = 'none';
-  }
+init();
+
+/* ============================
+   UI helpers
+   ============================ */
+function renderCategoriesList(filter=''){
+  categoriesList.innerHTML = '';
+  const keys = Object.keys(CATEGORIES).filter(k=>k.toLowerCase().includes(filter.toLowerCase()));
+  keys.forEach(k=>{
+    const el = document.createElement('div');
+    el.className = 'reveal-card';
+    el.innerHTML = `<div style="text-align:left"><strong>${k}</strong><div class="muted" style="font-size:12px;margin-top:6px">${CATEGORIES[k].length} palabras</div></div>`;
+    el.onclick = ()=> {
+      categorySelect.value = k;
+      state.category = k;
+      updatePreview();
+      window.scrollTo({top:0, behavior:'smooth'});
+    };
+    categoriesList.appendChild(el);
+  });
 }
 
-/* render categories */
-function renderCategories(filter=''){
-  categoriesGrid.innerHTML = '';
-  const keys = Object.keys(CATEGORIES).filter(k => k.toLowerCase().includes(filter.toLowerCase()));
-  keys.forEach(k => categoriesGrid.appendChild(createCategoryButton(k)));
-}
-renderCategories();
-
-/* search */
-searchInput.addEventListener('input', (e)=> renderCategories(e.target.value) );
-
-/* select category */
-function selectCategory(name){
-  state.category = name;
-  updateSelectedCategory();
-  // show players panel
-  playersCard.style.display = 'block';
-  window.scrollTo({top:0, behavior:'smooth'});
+function updatePreview(){
+  const cat = categorySelect.value;
+  state.category = cat;
+  if(!cat) { previewCard.style.display='none'; return; }
+  previewCard.style.display='block';
+  previewWords.innerHTML = '';
+  CATEGORIES[cat].forEach(w=>{
+    const s = document.createElement('span'); s.textContent = w;
+    s.style.padding='6px 10px'; s.style.borderRadius='10px'; s.style.background='linear-gradient(90deg,#ecf9ff,#f7fbff)';
+    s.style.fontSize='13px'; s.style.border='1px solid rgba(10,70,110,0.04)';
+    previewWords.appendChild(s);
+  });
 }
 
-/* START players flow */
-btnStartPlayers.addEventListener('click', ()=>{
-  if(!state.category){
-    alert('Elegí una categoría primero en la columna derecha.');
-    return;
-  }
-  playersCard.style.display = 'block';
-});
+/* search categories */
+searchCat.addEventListener('input', e=> renderCategoriesList(e.target.value));
+categorySelect.addEventListener('change', updatePreview);
 
-/* CANCEL players input */
-btnCancelPlayers.addEventListener('click', ()=>{
-  playersCard.style.display = 'none';
-});
-
-/* RESET everything */
-btnReset.addEventListener('click', ()=>{
-  if(!confirm('Reiniciar la partida y borrar jugadores actuales?')) return;
-  state = { category:null, players:[], secretWord:null, impostorCount:1, currentRevealIndex:0, active:false };
-  playersCard.style.display='none';
-  playersListCard.style.display='none';
-  playersList.innerHTML='';
-  selectedCategoryEl.textContent='Ninguna';
-  previewCard.style.display='none';
-  playersInput.value='';
-  alert('Reiniciado.');
-});
-
-/* Assign roles */
-btnAssign.addEventListener('click', ()=>{
-  const raw = playersInput.value.trim();
-  if(!raw){
-    alert('Escribe al menos 3 jugadores, uno por línea.');
-    return;
-  }
-  const lines = raw.split(/\n+/).map(l=>l.trim()).filter(l=>l);
-  if(lines.length < 3){
-    alert('Se necesitan al menos 3 jugadores.');
-    return;
-  }
-  const impostors = parseInt(impostorsSelect.value) || 1;
-  if(impostors >= lines.length){
-    alert('La cantidad de impostores debe ser menor que la cantidad de jugadores.');
-    return;
-  }
-  state.impostorCount = impostors;
-  state.players = lines.map(n => ({ name:n, role:null, revealed:false }));
-  // pick impostor indices
-  const indices = [...Array(lines.length).keys()];
-  shuffleArray(indices);
-  const impostorIndices = indices.slice(0, impostors);
-
-  // pick secret word
-  const words = CATEGORIES[state.category] || [];
-  const chosenWord = words[Math.floor(Math.random() * words.length)];
-  state.secretWord = chosenWord;
-
-  // assign roles
-  state.players.forEach((p, idx) => {
-    if(impostorIndices.includes(idx)){
-      p.role = 'IMPOSTOR';
+/* theme select */
+themeSelect.addEventListener('change', (e)=> applyTheme(e.target.value));
+function applyTheme(mode){
+  if(mode === 'light'){ document.documentElement.style.background=''; document.body.style.background='linear-gradient(180deg,#f6fbff,#eaf5ff)'; }
+  else if(mode === 'dark'){ document.body.style.background='linear-gradient(180deg,#071028,#001220)'; }
+  else { // auto
+    // respect prefers-color-scheme
+    if(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      document.body.style.background='linear-gradient(180deg,#071028,#001220)';
     } else {
-      p.role = chosenWord;
+      document.body.style.background='linear-gradient(180deg,#f6fbff,#eaf5ff)';
     }
-  });
-
-  state.active = true;
-  state.currentRevealIndex = 0;
-
-  playersCard.style.display='none';
-  playersListCard.style.display='block';
-  renderPlayersList();
-  // smooth scroll
-  document.querySelector('#playersListCard').scrollIntoView({behavior:'smooth'});
-});
-
-/* render players */
-function renderPlayersList(){
-  playersList.innerHTML = '';
-  state.players.forEach((p, i) => {
-    const div = document.createElement('div');
-    div.className = 'player-item';
-    div.innerHTML = `<div class="player-name">${escapeHtml(p.name)}</div>
-                     <div class="player-actions">
-                        <button class="btn secondary" style="padding:8px 10px;font-weight:700" onclick="revealPlayer(${i})">Ver</button>
-                     </div>`;
-    playersList.appendChild(div);
-  });
-}
-
-/* reveal one player */
-function revealPlayer(index){
-  const player = state.players[index];
-  if(!player) return;
-  revealName.textContent = player.name;
-  if(player.role === 'IMPOSTOR'){
-    revealRole.textContent = 'SOS EL IMPOSTOR';
-    revealRole.classList.remove('word');
-    revealRole.classList.add('impostor');
-    revealRole.style.background = 'linear-gradient(90deg,#ff4d6d,#ff7a5a)';
-    revealRole.style.color = '#fff';
-  } else {
-    revealRole.textContent = player.role;
-    revealRole.classList.remove('impostor');
-    revealRole.classList.add('word');
-    revealRole.style.background = 'linear-gradient(90deg,#ffd66b,#ff9a3d)';
-    revealRole.style.color = '#111';
   }
-  // mark revealed
-  state.players[index].revealed = true;
-  revealModal.style.display = 'block';
 }
 
-/* hide reveal */
-btnHideReveal.addEventListener('click', ()=>{
-  revealModal.style.display = 'none';
+
+// timer
+  const t = parseInt(timerInput.value);
+  state.timerSeconds = (isNaN(t) || t < 0) ? 0 : t;
+
+  // choose word if not set (user may have used category)
+  if(!state.word) state.word = randomFrom(CATEGORIES[state.category]);
+
+  // pick impostors
+  const indices = [...Array(lines.length).keys()];
+  shuffle(indices);
+  const impostorIdx = indices.slice(0, count);
+
+  state.players = lines.map((name, idx)=>({
+    name,
+    role: impostorIdx.includes(idx) ? 'IMPOSTOR' : state.word,
+    seen: false
+  }));
+
+  state.impostorCount = count;
+  state.revealIndex = 0;
+  state.roundActive = true;
+
+  renderPlayersForReveal();
+  scrollToTopSmooth();
 });
 
-/* end round / reset players */
-btnEndRound.addEventListener('click', ()=>{
-  if(!confirm('Finalizar ronda y limpiar jugadores?')) return;
-  state.players = [];
-  state.secretWord = null;
-  state.active = false;
-  state.currentRevealIndex = 0;
-  playersListCard.style.display = 'none';
-  playersList.innerHTML = '';
-  playersInput.value = '';
-  revealModal.style.display = 'none';
+/* render players for reveal */
+function renderPlayersForReveal(){
+  playersContainer.innerHTML = '';
+  if(!state.players.length){ playersContainer.textContent = 'No hay jugadores'; return; }
+  const grid = document.createElement('div');
+  grid.className = 'reveal-grid';
+  state.players.forEach((p, idx)=>{
+    const card = document.createElement('div');
+    card.className = 'reveal-card';
+    card.innerHTML = `<div style="font-weight:700">${escapeHtml(p.name)}</div><div style="font-size:12px;color:#5b7b8f;margin-top:6px">${p.seen ? 'VISTO' : 'SIN VER'}</div>`;
+    card.onclick = ()=> openModalFor(idx);
+    grid.appendChild(card);
+  });
+  playersContainer.appendChild(grid);
+}
+
+
+/* open modal */
+let modalTimer = null;
+function openModalFor(idx){
+  if(!state.roundActive) return;
+  const p = state.players[idx];
+  modalName.textContent = p.name;
+  if(p.role === 'IMPOSTOR'){ modalRole.textContent = 'SOS EL IMPOSTOR'; modalRole.className='role impostor'; }
+  else { modalRole.textContent = p.role; modalRole.className='role word'; }
+  modal.classList.add('show');
+  modal.setAttribute('aria-hidden','false');
+
+  // mark seen
+  state.players[idx].seen = true;
+  renderPlayersForReveal();
+
+  // timer auto-hide
+  clearTimeout(modalTimer);
+  if(state.timerSeconds > 0){
+    modalTimer = setTimeout(()=> {
+      closeModal();
+      // if auto next: move to next unseen
+      autoNextReveal();
+    }, state.timerSeconds * 1000);
+  }
+}
+
+/* close modal */
+function closeModal(){
+  modal.classList.remove('show');
+  modal.setAttribute('aria-hidden','true');
+  clearTimeout(modalTimer);
+}
+
+/* next button: go to next unseen or finish */
+btnModalNext.addEventListener('click', ()=>{
+  closeModal();
+  autoNextReveal();
 });
 
-/* new round (keep category) */
-btnNewRound.addEventListener('click', ()=>{
-  if(!state.category){
-    alert('Primero elegí una categoría.');
+/* hide button */
+btnModalHide.addEventListener('click', ()=> closeModal());
+
+/* auto next: find first unseen and open */
+function autoNextReveal(){
+  const next = state.players.findIndex(p=>!p.seen);
+  if(next === -1){
+    // all seen => round finished
+    alert('Ronda finalizada. Pueden votar o iniciar nueva ronda.');
+    state.roundActive = false;
     return;
   }
-  if(!confirm('Iniciar nueva ronda (se borrarán los jugadores cargados)?')) return;
+  // open next after small delay
+  setTimeout(()=> openModalFor(next), 250);
+}
+
+/* new round */
+btnNewRound.addEventListener('click', ()=>{
+  if(!confirm('Iniciar nueva ronda? Se borrarán jugadores actuales.')) return;
+  resetRound();
+});
+
+/* end game */
+btnEndGame.addEventListener('click', ()=>{
+  if(!confirm('Finalizar partida y limpiar todo?')) return;
+  resetAll();
+});
+
+/* reset round without clearing category */
+function resetRound(){
   state.players = [];
-  playersListCard.style.display = 'none';
-  playersList.innerHTML = '';
-  playersInput.value = '';
-});
-
-/* utils */
-function shuffleArray(a){
-  for(let i=a.length-1;i>0;i--){
-    const j = Math.floor(Math.random()*(i+1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
+  state.word = null;
+  state.revealIndex = 0;
+  state.roundActive = false;
+  playersTextarea.value = '';
+  playersContainer.innerHTML = 'No asignados';
+  closeModal();
 }
 
-/* small helper to escape text */
-function escapeHtml(text){
-  const map = { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#039;' };
-  return text.replace(/[&<>"']/g, m => map[m]);
+/* reset all */
+function resetAll(){
+  state = { category: null, word: null, players: [], impostorCount: 1, timerSeconds: 8, revealIndex: 0, roundActive:false };
+  playersTextarea.value = '';
+  playersContainer.innerHTML = 'No asignados';
+  categorySelect.selectedIndex = 0;
+  updatePreview();
+  closeModal();
 }
 
-/* keyboard shortcut: press C to focus search */
+/* modal keyboard escape */
 document.addEventListener('keydown', (e)=>{
-  if(e.key.toLowerCase() === 'c'){ searchInput.focus(); }
+  if(e.key === 'Escape') closeModal();
 });
 
-/* initial selected category: pick first */
-(function init(){
-  const keys = Object.keys(CATEGORIES);
-  if(keys.length) state.category = keys[0];
-  renderCategories();
-  updateSelectedCategory();
-})();
-
-/* renderCategories function (used above) */
-function renderCategories(){
-  categoriesGrid.innerHTML = '';
-  Object.keys(CATEGORIES).forEach(name=>{
-    categoriesGrid.appendChild(createCategoryButton(name));
+/* theme auto detect on load */
+if(window.matchMedia){
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e=>{
+    if(themeSelect.value === 'auto') applyAutoTheme();
   });
 }
 
-</script>
+/* helper functions */
+function randomFrom(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } }
+function shuffle(arr){ let a = arr; for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]] } return a; }
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])); }
 
+function scrollToTopSmooth(){ window.scrollTo({top:0, behavior:'smooth'}); }
+
+/* simple theme handler (auto/light/dark) */
+function applyAutoTheme(){ if(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches){ document.body.style.background='linear-gradient(180deg,#071028,#001220)'; } else { document.body.style.background='linear-gradient(180deg,#f6fbff,#eaf5ff)'; } }
+themeSelect.addEventListener('change', ()=>{
+  const v = themeSelect.value;
+  if(v === 'auto'){ applyAutoTheme(); }
+  else if(v === 'light'){ document.body.style.background='linear-gradient(180deg,#f6fbff,#eaf5ff)'; }
+  else if(v === 'dark'){ document.body.style.background='linear-gradient(180deg,#071028,#001220)'; }
+});
+
+/* render categories list initially */
+renderCategoriesList();
+updatePreview();
+
+/* attach small event handlers for accessibility */
+categorySelect.addEventListener('change', ()=> { state.category = categorySelect.value; updatePreview(); });
+
+/* utility to render categories list (repurpose above) */
+function renderCategoriesList(){
+  categoriesList.innerHTML = '';
+  const keys = Object.keys(CATEGORIES);
+  keys.forEach(k=>{
+    const node = document.createElement('div');
+    node.className = 'reveal-card';
+    node.innerHTML = `<strong>${k}</strong><div style="font-size:12px;margin-top:6px;color:#5b7b8f">${CATEGORIES[k].length} palabras</div>`;
+    node.onclick = ()=> {
+      categorySelect.value = k;
+      state.category = k;
+      updatePreview();
+      window.scrollTo({top:0,behavior:'smooth'});
+    };
+    categoriesList.appendChild(node);
+  });
+}
+
+
+
+/* updatePreview used earlier but ensure available */
+function updatePreview(){
+  const cat = categorySelect.value || Object.keys(CATEGORIES)[0];
+  state.category = cat;
+  previewCard.style.display = cat ? 'block' : 'none';
+  previewWords.innerHTML = '';
+  (CATEGORIES[cat]||[]).slice(0,20).forEach(w=>{
+    const el = document.createElement('span');
+    el.textContent = w;
+    el.style.padding = '6px 10px';
+    el.style.borderRadius = '8px';
+    el.style.background = 'linear-gradient(90deg,#ecf9ff,#f8fbff)';
+    el.style.fontSize = '13px';
+    el.style.margin = '4px';
+    el.style.border = '1px solid rgba(10,70,110,0.04)';
+    previewWords.appendChild(el);
+  });
+}
+
+/* expose small features for keyboard use */
+document.addEventListener('keydown', (e)=>{
+  if(e.key.toLowerCase() === 'r' && e.ctrlKey){ // ctrl+r -> random
+    e.preventDefault();
+    btnRandom.click();
+  }
+});
+</script>
 </body>
 </html>
