@@ -8,191 +8,188 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
 
+
+
 <style>
-  :root{
-    --bg1:#0f0c29;
-    --bg2:#302b63;
-    --accent1:#ff5858;
-    --accent2:#f09819;
-    --card: rgba(255,255,255,0.06);
-    --glass: rgba(255,255,255,0.07);
-    --glass-2: rgba(255,255,255,0.03);
-    --text: #f6f6f6;
-  }
-  *{box-sizing:border-box}
-  body{
-    margin:0;
-    font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;
-    background: linear-gradient(135deg,var(--bg1) 0%, var(--bg2) 100%);
-    color:var(--text);
-    -webkit-font-smoothing:antialiased;
-    -moz-osx-font-smoothing:grayscale;
-    min-height:100vh;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:20px;
+  * {
+    box-sizing: border-box;
   }
 
-  .app {
-    width:100%;
-    max-width:920px;
-    display:grid;
-    grid-template-columns: 1fr 420px;
-    gap:20px;
-    align-items:start;
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: "Poppins", sans-serif;
+    background: #050505;
+    color: #fff;
+    display: flex;
+    justify-content: center;
   }
 
-  /* responsive */
-  @media (max-width:920px){
-    .app{ grid-template-columns:1fr; }
+  /* === CONTENEDOR GENERAL === */
+  .container {
+    width: 100%;
+    max-width: 650px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
   }
 
-  .panel {
-    background: linear-gradient(180deg, var(--glass), rgba(255,255,255,0.02));
-    border-radius:16px;
-    padding:18px;
-    box-shadow: 0 8px 30px rgba(2,6,23,0.5), inset 0 1px 0 rgba(255,255,255,0.02);
-    border: 1px solid rgba(255,255,255,0.03);
-    backdrop-filter: blur(6px);
+  h1, h2, h3 {
+    text-align: center;
+    margin: 0;
+    padding-bottom: 10px;
   }
 
-  header.app-header{
-    grid-column:1/-1;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:16px;
-    margin-bottom:6px;
+  /* === SECCIONES / BLOQUES === */
+  .section {
+    background: #111;
+    padding: 22px;
+    border-radius: 16px;
+    box-shadow: 0 0 12px #00ffd544;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    animation: fadeIn 0.4s ease-in-out;
   }
 
-  header h1{
-    font-size:20px;
-    margin:0;
-    font-weight:800;
-    letter-spacing:0.2px;
-  }
-  header p{ margin:0; opacity:0.85; font-size:13px }
-
-  /* LEFT - game controls */
-  .controls { display:flex; flex-direction:column; gap:14px; }
-
-  .card {
-    padding:14px;
-    border-radius:12px;
-    background:var(--card);
-    transition: transform .18s ease, box-shadow .18s ease;
-  }
-  .card:hover{ transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0,0,0,0.45); }
-
-  label{ font-size:13px; font-weight:600; display:block; margin-bottom:8px; color:var(--text) }
-
-  select, textarea, input[type="text"], input[type="number"]{
-    width:100%;
-    padding:12px 14px;
-    border-radius:10px;
-    border:none;
-    background:var(--glass-2);
-    color:var(--text);
-    outline:none;
-    font-size:14px;
+  /* === BOTONES === */
+  button {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    background: linear-gradient(45deg, #00ffc8, #0088ff);
+    color: #000;
+    cursor: pointer;
+    transition: 0.25s;
   }
 
-  .btn {
-    display:inline-block;
-    width:100%;
-    padding:12px 14px;
-    border-radius:12px;
-    border:none;
-    cursor:pointer;
-    font-weight:700;
-    letter-spacing:0.2px;
-    color:#111;
-    background: linear-gradient(90deg, var(--accent1), var(--accent2));
-    box-shadow: 0 8px 18px rgba(240,100,80,0.12);
-    transition: transform .12s ease, box-shadow .12s ease;
-    margin-top:6px;
-  }
-  .btn:active{ transform: translateY(1px) scale(.998) }
-  .btn.secondary{
-    background:transparent;
-    color:var(--text);
-    border:1px solid rgba(255,255,255,0.05);
-    box-shadow:none;
+  button:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
   }
 
-  /* categories grid (right panel) */
-  .right {
-    display:flex;
-    flex-direction:column;
-    gap:12px;
+  /* === INPUTS & SELECT === */
+  select, input {
+    width: 100%;
+    padding: 13px;
+    border-radius: 12px;
+    border: none;
+    font-size: 1.05rem;
   }
 
-  .categories-grid {
-    display:grid;
-    gap:10px;
-    grid-template-columns: repeat(2, 1fr);
+  /* === LISTA DE JUGADORES === */
+  .players-list {
+    background: #0d0d0d;
+    padding: 16px;
+    border-radius: 16px;
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 600;
+    box-shadow: 0 0 10px #00c8ff66;
   }
-  @media (max-width:600px) { .categories-grid{ grid-template-columns: repeat(1,1fr); } }
 
-  .cat-btn{
-    padding:12px;
-    border-radius:10px;
-    background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-    border:1px solid rgba(255,255,255,0.03);
-    cursor:pointer;
-    text-align:left;
-    transition: transform .12s ease, box-shadow .12s ease;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
+  .player-button {
+    padding: 14px;
+    margin: 8px 0;
+    border-radius: 14px;
+    background: #1c1c1c;
+    border: 2px solid #00ffc877;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: 0.2s;
   }
-  .cat-btn:hover{ transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.45) }
-  .cat-btn .title{ font-weight:700; font-size:14px }
-  .cat-btn .count{ font-size:12px; opacity:0.85 }
 
-  /* players list */
-  .players-list{ display:flex; flex-direction:column; gap:8px; margin-top:8px }
-  .player-item{
-    padding:10px 12px;
-    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    border-radius:10px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:8px;
+  .player-button:hover {
+    background: #00ffc822;
+    transform: scale(1.03);
   }
-  .player-name{ font-weight:700 }
-  .player-actions{ display:flex; gap:8px }
 
-  /* reveal modal-ish */
-  .reveal {
-    position:fixed;
-    left:50%;
-    top:50%;
-    transform: translate(-50%,-50%) scale(0.98);
-    min-width:260px;
-    max-width:90%;
-    z-index:9999;
-    padding:18px;
-    border-radius:14px;
-    text-align:center;
-    background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
-    box-shadow: 0 30px 80px rgba(2,6,23,0.75);
-    border: 1px solid rgba(255,255,255,0.04);
-    animation: popup .22s cubic-bezier(.2,.9,.3,1) forwards;
+  /* === PALABRA MOSTRADA === */
+  .word-box {
+    background: #0e0e0e;
+    padding: 25px;
+    border-radius: 18px;
+    text-align: center;
+    font-size: 1.6rem;
+    font-weight: 700;
+    box-shadow: 0 0 14px #00ffd544;
+    animation: pop 0.35s ease-out;
   }
-  @keyframes popup {
-    from{ opacity:0; transform: translate(-50%,-50%) scale(.92) }
-    to{ opacity:1; transform: translate(-50%,-50%) scale(1) }
-  }
-  .reveal h2{ margin:6px 0 10px; font-size:20px; font-weight:800 }
-  .reveal .role{ font-size:22px; font-weight:900; padding:16px; border-radius:12px; margin:10px 0; background:linear-gradient(90deg,#000000, rgba(255,255,255,0.03)); }
-  .reveal .impostor{ color:#fff; background: linear-gradient(90deg,#ff4d6d,#ff7a5a) }
-  .reveal .word{ color:#000; background: linear-gradient(90deg,#ffd66b,#ff9a3d) }
 
-  footer.small { margin-top:12px; font-size:12px; opacity:0.8; text-align:center }
+  /* === OCULTO === */
+  .hidden-screen {
+    display: none;
+  }
+
+  /* === ANIMACIONES === */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pop {
+    0% { transform: scale(0.6); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  /* === RESPONSIVE === */
+  @media (max-width: 480px) {
+    h1 { font-size: 1.6rem; }
+    h2 { font-size: 1.3rem; }
+    h3 { font-size: 1.1rem; }
+
+    .section {
+      padding: 16px;
+      gap: 14px;
+    }
+
+    button {
+      padding: 12px;
+      font-size: 1rem;
+    }
+
+    .word-box {
+      font-size: 1.25rem;
+      padding: 20px;
+    }
+
+    .player-button {
+      font-size: 1rem;
+      padding: 10px;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .container {
+      max-width: 720px;
+    }
+
+    .section {
+      padding: 26px;
+    }
+
+    button {
+      font-size: 1.3rem;
+      padding: 16px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .container {
+      max-width: 850px;
+    }
+  }
+
 </style>
+
+
+
+
+
 </head>
 <body>
   <div class="app" id="app">
