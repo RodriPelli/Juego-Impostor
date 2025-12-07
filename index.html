@@ -1,419 +1,249 @@
-<!--
-Juego del Impostor — Versión Completa
-Incluye:
-✔ Firebase (leer/escribir categorías y palabras en la nube)
-✔ Animaciones suaves
-✔ Modo 1 o 2 impostores
-✔ Temas (neón / oscuro / pastel)
-✔ CRUD completo (categorías y palabras)
-✔ Pantallas dinámicas
-
-NOTA: Debes ingresar tu configuración Firebase donde se indica.
--->
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Juego del Impostor</title>
-<style>
-  body {
-    margin:0;
-    font-family: 'Montserrat', sans-serif;
-    background: linear-gradient(135deg, #1e1e1e, #000000);
-    color:white;
-    overflow-x:hidden;
-    transition: background 0.5s ease;
-  }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Juego del Impostor Mejorado</title>
 
-  .container {
-    padding:20px;
-    animation: fadeIn 0.7s ease;
-  }
+  <!-- ESTILOS MODERNOS + TEMAS + ANIMACIONES -->
+  <style>
+    :root {
+      --bg: #1a1a1a;
+      --card: #242424;
+      --text: #ffffff;
+      --primary: #ff0080;
+      --secondary: #4a00e0;
+    }
 
-  h1, h2, h3 {
-    text-align:center;
-    margin-bottom:20px;
-  }
+    [data-theme="neon"] {
+      --bg: #000000;
+      --card: #111111;
+      --text: #00ffea;
+      --primary: #ff00f7;
+      --secondary: #00eaff;
+    }
 
-  button {
-    width:100%;
-    padding:15px;
-    margin:10px 0;
-    background:#ff2fe6;
-    border:none;
-    border-radius:12px;
-    color:white;
-    font-size:18px;
-    font-weight:bold;
-    cursor:pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-  }
+    [data-theme="pastel"] {
+      --bg: #f9f5ff;
+      --card: #ffffff;
+      --text: #4b3f72;
+      --primary: #ff9ecd;
+      --secondary: #8ec6ff;
+    }
 
-  button:hover {
-    transform:scale(1.05);
-    box-shadow:0 0 12px #ff6bf5;
-  }
+    [data-theme="oscuro"] {
+      --bg: #0e0e0e;
+      --card: #1a1a1a;
+      --text: #e8e8e8;
+      --primary: #bb86fc;
+      --secondary: #03dac6;
+    }
 
-  .hidden { display:none; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+      transition: background 0.4s ease;
+    }
 
-  @keyframes fadeIn {
-    from { opacity:0; transform:translateY(10px); }
-    to { opacity:1; transform:translateY(0); }
-  }
+    .container {
+      width: 100%;
+      max-width: 480px;
+      animation: fadeIn 0.6s ease;
+    }
 
-  input, select {
-    width:100%;
-    padding:12px;
-    margin:10px 0;
-    border-radius:8px;
-    border:none;
-    font-size:16px;
-  }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-  .word-box, .category-box {
-    background:#222;
-    padding:10px;
-    margin:5px 0;
-    border-radius:8px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-  }
+    .card {
+      background: var(--card);
+      padding: 20px;
+      margin: 15px 0;
+      border-radius: 16px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      transition: 0.3s;
+      animation: fadeIn 0.5s ease;
+    }
 
-  .edit-btn, .delete-btn {
-    padding:6px 10px;
-    font-size:14px;
-    margin-left:5px;
-    border:none;
-    border-radius:6px;
-    cursor:pointer;
-    color:white;
-  }
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      margin-top: 12px;
+      color: white;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: 0.3s;
+    }
 
-  .edit-btn { background:#0099ff; }
-  .edit-btn:hover { background:#33b3ff;
-  }
-  .delete-btn { background:#ff0059; }
-  .delete-btn:hover { background:#ff337a; }
-</style>
+    button:hover {
+      opacity: 0.85;
+      transform: scale(1.03);
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border-radius: 10px;
+      border: none;
+      outline: none;
+      font-size: 1rem;
+    }
+
+    .delete-btn {
+      background: #ff0033;
+      margin-top: 5px;
+    }
+
+    #reveal-screen {
+      animation: fadeIn 0.4s ease;
+    }
+  </style>
 </head>
-<body>
+<body data-theme="default">
+<div class="container">
+  <h1>Juego del Impostor 🔥</h1>
 
-<div id="pantallaInicio" class="container">
-  <h1>Juego del Impostor</h1>
+  <!-- TEMAS -->
+  <div class="card">
+    <h2>Temas</h2>
+    <select id="theme-select">
+      <option value="default">Moderno</option>
+      <option value="neon">Neón</option>
+      <option value="pastel">Pastel</option>
+      <option value="oscuro">Oscuro</option>
+    </select>
+  </div>
 
-  <h3>Selecciona una categoría</h3>
-  <div id="listaCategorias"></div>
+  <!-- CATEGORÍAS -->
+  <div class="card">
+    <h2>Categorías</h2>
+    <select id="category-select"></select>
 
-  <button onclick="mostrarCrearCategoria()">➕ Crear Categoría</button>
+    <h3>Agregar palabra</h3>
+    <input id="new-word" placeholder="Nueva palabra" />
+    <button onclick="addWord()">Agregar palabra</button>
 
-  <h3>Temas</h3>
-  <button onclick="tema('neon')">Neón</button>
-  <button onclick="tema('oscuro')">Oscuro</button>
-  <button onclick="tema('pastel')">Pastel</button>
+    <h3>Nueva categoría</h3>
+    <input id="new-category" placeholder="Nombre de categoría" />
+    <button onclick="addCategory()">Crear categoría</button>
+
+    <h3>Palabras</h3>
+    <ul id="word-list"></ul>
+
+    <button class="delete-btn" onclick="deleteCategory()">Eliminar categoría</button>
+  </div>
+
+  <!-- DOBLE IMPOSTOR -->
+  <div class="card">
+    <h2>Modo de juego</h2>
+    <select id="impostor-mode">
+      <option value="1">1 Impostor</option>
+      <option value="2">2 Impostores</option>
+    </select>
+  </div>
+
+  <!-- JUGADORES -->
+  <div class="card">
+    <h2>Jugadores</h2>
+    <input id="player-name" placeholder="Nombre" />
+    <button onclick="addPlayer()">Agregar jugador</button>
+    <ul id="players"></ul>
+    <button onclick="startGame()">Iniciar juego</button>
+  </div>
+
+  <!-- REVELAR -->
+  <div class="card" id="reveal-screen" style="display:none; text-align:center;">
+    <h2 id="reveal-text" style="font-size:2rem;"></h2>
+    <button onclick="closeReveal()">Cerrar</button>
+  </div>
 </div>
 
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 
-<!-- CREAR CATEGORÍA -->
-<div id="pantallaCrearCategoria" class="container hidden">
-  <h2>Nueva Categoría</h2>
-  <input id="nuevaCategoriaNombre" placeholder="Nombre de la categoría" />
-  <button onclick="crearCategoria()">Guardar</button>
-  <button onclick="volver('pantallaInicio')">Volver</button>
-</div>
+<script>
+  const firebaseConfig = {
+    apiKey: "YOUR_KEY",
+    authDomain: "",
+    projectId: "",
+    storageBucket: "",
+    messagingSenderId: "",
+    appId: ""
+  };
 
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
 
-<!-- PALABRAS DE LA CATEGORÍA -->
-<div id="pantallaPalabras" class="container hidden">
-  <h2 id="tituloCategoria"></h2>
+  let categories = {};
+  let players = [];
+  let chosenCategory = null;
+  let assignments = {};
 
-  <div id="listaPalabras"></div>
-
-  <input id="nuevaPalabra" placeholder="Agregar palabra" />
-  <button onclick="agregarPalabra()">Agregar</button>
-
-  <button onclick="borrarCategoria()" style="background:#ff0033">Eliminar categoría</button>
-  <button onclick="iniciarJuego()">Iniciar Juego</button>
-  <button onclick="volver('pantallaInicio')">Volver</button>
-</div>
-
-
-<!-- AGREGAR JUGADORES -->
-<div id="pantallaJugadores" class="container hidden">
-  <h2>Jugadores</h2>
-
-  <input id="nuevoJugador" placeholder="Nombre del jugador" />
-  <button onclick="agregarJugador()">Agregar</button>
-
-  <div id="listaJugadores"></div>
-
-  <h3>Impostores</h3>
-  <select id="cantidadImpostores">
-    <option value="1">1 Impostor</option>
-    <option value="2">2 Impostores</option>
-  </select>
-
-  <button onclick="asignarRoles()">Asignar Palabras</button>
-  <button onclick="volver('pantallaPalabras')">Volver</button>
-</div>
-
-
-<!-- REVELAR PALABRA -->
-<div id="pantallaRevelar" class="container hidden">
-  <h2 id="textoJugador"></h2>
-  <button id="btnVer"></button>
-  <button onclick="volver('pantallaJugadores')">Volver</button>
-</div>
-
-
-<script type="module">
-// -------------------------
-// 🔥 FIRBASE CONFIG
-// -------------------------
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-// 👉 Reemplaza estos datos con TU configuración
-const firebaseConfig = {
-  apiKey: "TU_API_KEY",
-  authDomain: "TU_AUTH_DOMAIN",
-  projectId: "TU_PROJECT_ID",
-  storageBucket: "TU_BUCKET",
-  messagingSenderId: "TU_SENDER",
-  appId: "TU_APPID"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-let categoriaActual = null;
-let palabras = [];
-let jugadores = [];
-
-// -------------------------
-// 🌐 Cargar categorías
-// -------------------------
-async function cargarCategorias() {
-  const contenedor = document.getElementById("listaCategorias");
-  contenedor.innerHTML = "Cargando...";
-
-  const snap = await getDocs(collection(db, "categorias"));
-
-  contenedor.innerHTML = "";
-  snap.forEach(docu => {
-    const data = docu.data();
-    const div = document.createElement("div");
-    div.className = "category-box";
-    div.innerHTML = `
-      <span>${data.nombre}</span>
-      <button class="edit-btn" onclick="abrirCategoria('${docu.id}', '${data.nombre}')">Abrir</button>
-    `;
-    contenedor.appendChild(div);
-  });
-}
-window.onload = cargarCategorias;
-
-// -------------------------
-// ➕ Crear categoría
-// -------------------------
-window.crearCategoria = async function () {
-  const nombre = document.getElementById("nuevaCategoriaNombre").value.trim();
-  if (!nombre) return;
-
-  await addDoc(collection(db, "categorias"), {
-    nombre: nombre,
-    palabras: []
-  });
-
-  volver('pantallaInicio');
-  cargarCategorias();
-}
-
-// -------------------------
-// 📂 Abrir categoría
-// -------------------------
-window.abrirCategoria = async function (id, nombre) {
-  categoriaActual = id;
-  document.getElementById("tituloCategoria").textContent = nombre;
-
-  const snap = await getDocs(collection(db, "categorias"));
-  snap.forEach(docu => {
-    if (docu.id === id) palabras = docu.data().palabras || [];
-  });
-
-  mostrar('pantallaPalabras');
-  actualizarListaPalabras();
-}
-
-// -------------------------
-// 📌 Mostrar palabras
-// -------------------------
-function actualizarListaPalabras() {
-  const cont = document.getElementById("listaPalabras");
-  cont.innerHTML = "";
-
-  palabras.forEach((p, index) => {
-    const div = document.createElement("div");
-    div.className = "word-box";
-    div.innerHTML = `
-      <span>${p}</span>
-      <button class="edit-btn" onclick="editarPalabra(${index})">Editar</button>
-      <button class="delete-btn" onclick="eliminarPalabra(${index})">X</button>
-    `;
-    cont.appendChild(div);
-  });
-}
-
-// -------------------------
-// ➕ Agregar palabra
-// -------------------------
-window.agregarPalabra = async function () {
-  const palabra = document.getElementById("nuevaPalabra").value.trim();
-  if (!palabra) return;
-
-  palabras.push(palabra);
-  await updateDoc(doc(db, "categorias", categoriaActual), { palabras });
-
-  document.getElementById("nuevaPalabra").value = "";
-  actualizarListaPalabras();
-}
-
-// -------------------------
-// ✏️ Editar palabra
-// -------------------------
-window.editarPalabra = async function (i) {
-  const nueva = prompt("Editar palabra", palabras[i]);
-  if (!nueva) return;
-  palabras[i] = nueva;
-
-  await updateDoc(doc(db, "categorias", categoriaActual), { palabras });
-  actualizarListaPalabras();
-}
-
-// -------------------------
-// ❌ Eliminar palabra
-// -------------------------
-window.eliminarPalabra = async function (i) {
-  palabras.splice(i, 1);
-  await updateDoc(doc(db, "categorias", categoriaActual), { palabras });
-  actualizarListaPalabras();
-}
-
-// -------------------------
-// 🗑️ Eliminar categoría
-// -------------------------
-window.borrarCategoria = async function () {
-  if (!confirm("¿Seguro que quieres eliminar esta categoría?")) return;
-  await deleteDoc(doc(db, "categorias", categoriaActual));
-  volver('pantallaInicio');
-  cargarCategorias();
-}
-
-// -------------------------
-// 👥 Jugadores
-// -------------------------
-window.agregarJugador = function () {
-  const nombre = document.getElementById("nuevoJugador").value.trim();
-  if (!nombre) return;
-  jugadores.push({ nombre, rol:null });
-  document.getElementById("nuevoJugador").value = "";
-  listarJugadores();
-}
-
-function listarJugadores() {
-  const cont = document.getElementById("listaJugadores");
-  cont.innerHTML = "";
-
-  jugadores.forEach((j,i)=>{
-    const div = document.createElement("div");
-    div.className="word-box";
-    div.innerHTML = `
-      <span>${j.nombre}</span>
-      <button class="delete-btn" onclick="jugadores.splice(${i},1); listarJugadores()">X</button>
-    `;
-    cont.appendChild(div);
-  });
-}
-
-// -------------------------
-// 🎭 Asignar roles (1 o 2 impostores)
-// -------------------------
-window.asignarRoles = function () {
-  if (jugadores.length < 3) return alert("Necesitas mínimo 3 jugadores");
-
-  const cantImp = parseInt(document.getElementById("cantidadImpostores").value);
-
-  const copia = [...jugadores];
-  const impostores = [];
-
-  for (let i = 0; i < cantImp; i++) {
-    const idx = Math.floor(Math.random() * copia.length);
-    impostores.push(copia[idx].nombre);
-    copia.splice(idx,1);
+  // CARGAR CATEGORÍAS
+  async function loadCategories() {
+    const snapshot = await db.collection("categories").get();
+    categories = {};
+    snapshot.forEach(doc => categories[doc.id] = doc.data().words);
+    renderCategorySelect();
   }
 
-  jugadores = jugadores.map(j => ({
-    nombre:j.nombre,
-    rol: impostores.includes(j.nombre) ? "IMPOSTOR" : palabras[Math.floor(Math.random()*palabras.length)]
-  }));
-
-  mostrar('pantallaRevelar');
-  prepararRevelacion();
-}
-
-let jugadorActual = 0;
-
-function prepararRevelacion() {
-  if (jugadorActual >= jugadores.length) {
-    jugadorActual = 0;
-    return volver('pantallaJugadores');
+  function renderCategorySelect() {
+    const sel = document.getElementById("category-select");
+    sel.innerHTML = "";
+    Object.keys(categories).forEach(cat => {
+      sel.innerHTML += `<option value="${cat}">${cat}</option>`;
+    });
+    renderWords();
   }
 
-  const j = jugadores[jugadorActual];
-  document.getElementById("textoJugador").textContent = j.nombre;
-  const btn = document.getElementById("btnVer");
-  btn.textContent = "Ver palabra";
-  btn.onclick = function () {
-    btn.textContent = j.rol;
-    setTimeout(() => {
-      jugadorActual++;
-      prepararRevelacion();
-    }, 2000);
+  function renderWords() {
+    const cat = document.getElementById("category-select").value;
+    chosenCategory = cat;
+    const list = document.getElementById("word-list");
+    list.innerHTML = "";
+
+    categories[cat]?.forEach((w, i) => {
+      list.innerHTML += `<li>${w} <button class='delete-btn' onclick='deleteWord(${i})'>X</button></li>`;
+    });
   }
-}
 
-// -------------------------
-// 🔄 Cambio de pantallas
-// -------------------------
-window.mostrar = function (pantalla) {
-  document.querySelectorAll('.container').forEach(p=>p.classList.add('hidden'));
-  document.getElementById(pantalla).classList.remove('hidden');
-}
+  // TEMAS
+  document.getElementById("theme-select").onchange = (e) => {
+    document.body.setAttribute("data-theme", e.target.value);
+  };
 
-window.volver = function (pantalla) {
-  mostrar(pantalla);
-}
+  // AGREGAR PALABRA
+  async function addWord() {
+    const w = document.getElementById("new-word").value.trim();
+    if (!w) return;
 
-window.mostrarCrearCategoria = function(){mostrar('pantallaCrearCategory')}
+    categories[chosenCategory].push(w);
+    await db.collection("categories").doc(chosenCategory).set({ words: categories[chosenCategory] });
 
-// -------------------------
-// 🎨 TEMAS
-// -------------------------
-window.tema = function (t) {
-  if (t === 'neon') {
-    document.body.style.background = "linear-gradient(135deg,#000428,#004e92)";
+    renderWords();
+    document.getElementById("new-word").value = "";
   }
-  if (t === 'oscuro') {
-    document.body.style.background = "linear-gradient(135deg,#111,#000)";
-  }
-  if (t === 'pastel') {
-    document.body.style.background = "linear-gradient(135deg,#ffd1ff,#d1eaff)";
-  }
-}
 
-</script>
-</body>
-</html>
+  // ELIMINAR PALABRA
+  async function deleteWord(index) {
+    categories[chosenCategory].splice(index, 1);
+    await db.collection("categories").doc(chosenCategory).set({ words: categories[chosenCategory] });
+    renderWords();
+  }
+
+  // AGREGAR CATEGORÍA
+  async function addCategory() {
+    const c = document.getElement
 
