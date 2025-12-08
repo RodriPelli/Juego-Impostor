@@ -9,7 +9,7 @@
     margin: 0;
     padding: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    transition: background 1s, color 1s;
+    transition: background 1s, color 0.5s;
   }
 
   .container {
@@ -17,7 +17,6 @@
     max-width: 500px;
     padding: 20px;
     margin: 20px auto;
-    box-sizing: border-box;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -28,7 +27,7 @@
     margin-bottom: 25px;
     font-size: 2rem;
     color: #ff4d4d;
-    text-shadow: 1px 1px 3px #000;
+    text-shadow: 1px 1px 2px #000;
   }
 
   .screen { display: none; }
@@ -74,10 +73,11 @@
     text-align: center;
     transition: all 0.3s;
     color: #fff;
+    user-select: none;
   }
 
   .jugador:hover { background-color: #2a2a3d; }
-  .revelado { font-weight: bold; color: #ffd700; background-color: #33334d !important; }
+  .revelado { font-weight: bold; background-color: #33334d !important; }
 
   select, label { margin: 5px 0; font-size: 16px; }
 
@@ -91,12 +91,16 @@
   body.tema-oscuro .jugador:hover { background: #2a2a3d; }
 
   body.tema-colorido {
-    background: linear-gradient(120deg,#ff4d4d,#4dff4d,#4d4dff,#ffdd4d);
+    background: linear-gradient(120deg,#c27f7f,#7fc27f,#7f7fc2,#c2c27f);
     background-size: 800% 800%;
     animation: gradientAnim 30s ease infinite;
     color: #fff;
   }
-  body.tema-colorido .jugador { background-color: rgba(255,255,255,0.2); }
+  body.tema-colorido h1,
+  body.tema-colorido .boton {
+    color: #fff;
+  }
+  body.tema-colorido .jugador { background-color: rgba(255,255,255,0.15); }
 
   @keyframes gradientAnim {
     0% { background-position: 0% 50%; }
@@ -104,7 +108,6 @@
     100% { background-position: 0% 50%; }
   }
 
-  /* Select y botones en pantalla inicial */
   #screen-config select { padding: 10px 15px; border-radius: 8px; border: none; font-weight: bold; }
 </style>
 </head>
@@ -145,11 +148,10 @@
 
 <!-- Pantalla revelar -->
 <div id="screen-revelar" class="screen">
-  <h2>Tocá tu nombre para ver tu palabra</h2>
+  <h2>Tocá tu nombre para ver/ocultar tu palabra</h2>
   <div class="lista-jugadores" id="lista-revelar"></div>
   <button class="boton" onclick="resetear()">Reiniciar</button>
 </div>
-
 
 <script>
 const palabras = {
@@ -205,14 +207,12 @@ function renderJugadores(){
 function empezarJuego(){
   if(jugadores.length < 3){ alert("Se necesitan al menos 3 jugadores."); return; }
 
-  // Elegir impostores
   const impostoresIndices = [];
   while(impostoresIndices.length < numImpostores){
     const idx = Math.floor(Math.random()*jugadores.length);
     if(!impostoresIndices.includes(idx)) impostoresIndices.push(idx);
   }
 
-  // Palabra común
   const listaPalabras = palabras[categoriaSeleccionada];
   const palabraComun = listaPalabras[Math.floor(Math.random()*listaPalabras.length)];
 
@@ -233,16 +233,21 @@ function mostrarRevelar(){
     const div = document.createElement("div");
     div.textContent = n;
     div.className = "jugador";
-    div.onclick = ()=>revelar(n,div);
+    div.onclick = ()=>toggleRevelar(n,div);
     lista.appendChild(div);
   });
 }
 
-function revelar(nombre, element){
-  if(!asignaciones[nombre]) return;
-  element.textContent = nombre + ": " + asignaciones[nombre];
-  element.classList.add("revelado");
-  element.onclick = null;
+function toggleRevelar(nombre, element){
+  if(element.dataset.mostrado === "true"){
+    element.textContent = nombre;
+    element.dataset.mostrado = "false";
+    element.classList.remove("revelado");
+  } else {
+    element.textContent = nombre + ": " + asignaciones[nombre];
+    element.dataset.mostrado = "true";
+    element.classList.add("revelado");
+  }
 }
 
 function resetear(){
