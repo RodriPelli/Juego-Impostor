@@ -11,6 +11,78 @@
 
 
     <style>
+
+/* ------------------------------
+   SISTEMA DE TEMAS
+--------------------------------*/
+
+/* Tema claro */
+:root {
+  --bg: #ffffff;
+  --text: #222;
+  --card: #f1f1f1;
+  --primary: #4a90e2;
+  --accent: #6ac47e;
+}
+
+/* Tema oscuro */
+.theme-dark {
+  --bg: #0e0e0e;
+  --text: #eaeaea;
+  --card: #1c1c1c;
+  --primary: #8ab4f8;
+  --accent: #4dd0e1;
+}
+
+/* Tema colorido */
+.theme-colorful {
+  --bg: #fff8e8;
+  --text: #222;
+  --card: #ffe7a1;
+  --primary: #ff7b72;
+  --accent: #6bcdfd;
+}
+
+/* Aplicar variables */
+body {
+  background: var(--bg);
+  color: var(--text);
+  transition: background .3s, color .3s;
+}
+
+.container, .card, .panel {
+  background: var(--card);
+  color: var(--text);
+  transition: background .3s, color .3s;
+}
+
+/* Botones */
+button {
+  background: var(--primary);
+  border: none;
+  color: #fff;
+  padding: 14px 20px;
+  border-radius: 12px;
+  font-size: 17px;
+  font-weight: bold;
+  width: 100%;
+  margin-top: 8px;
+}
+
+button:hover {
+  opacity: .85;
+}
+
+/* Botón secundario */
+button.secondary {
+  background: var(--accent);
+}
+
+/* Footer – "hecho con 🤍" */
+footer {
+  margin-top: 40px;
+  text-align: center;
+  font-size
         /* ---------- LAYOUT & BASE ---------- */
 :root{
   --bg: #f7fbff;
@@ -178,6 +250,21 @@ body.theme-colorful .revealBox{ background: linear-gradient(90deg,#fff7e6,#fff1f
   .title{ font-size:18px }
   .btn{ padding:10px }
 }
+
+.theme-box {
+  margin: 15px auto;
+  text-align: center;
+}
+
+.theme-box select {
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 12px;
+  background: var(--card);
+  color: var(--text);
+  border: 2px solid var(--primary);
+}
+
     </style>
 
 
@@ -189,7 +276,14 @@ body.theme-colorful .revealBox{ background: linear-gradient(90deg,#fff7e6,#fff1f
     <div class="container" id="mainScreen">
 
         <h1 class="title">🎭 Juego del Impostor</h1>
-
+<div class="theme-box">
+  <label for="themeSelect"><b>Tema:</b></label>
+  <select id="themeSelect">
+    <option value="light">Claro</option>
+    <option value="dark">Oscuro</option>
+    <option value="colorful">Colorido</option>
+  </select>
+</div>
         <div class="card fade">
             <label class="label">Selecciona una categoría:</label>
 
@@ -650,7 +744,42 @@ document.addEventListener('keydown', (e)=>{
 /* expose some functions for debugging if needed */
 window._impostorGame = { state, CATEGORIES, resetAll };
 
+/* ------------------------------
+   CAMBIO DE TEMA
+--------------------------------*/
+
+const themeSelect = document.getElementById("themeSelect");
+
+// Mantener selección si recarga
+if (localStorage.getItem("theme")) {
+  const saved = localStorage.getItem("theme");
+  document.body.classList.add(saved);
+  themeSelect.value = saved.replace("theme-", "");
+}
+
+themeSelect.addEventListener("change", () => {
+  document.body.classList.remove("theme-dark", "theme-colorful");
+
+  if (themeSelect.value === "light") {
+    document.body.className = "";
+    localStorage.setItem("theme", "");
+  }
+
+  if (themeSelect.value === "dark") {
+    document.body.classList.add("theme-dark");
+    localStorage.setItem("theme", "theme-dark");
+  }
+
+  if (themeSelect.value === "colorful") {
+    document.body.classList.add("theme-colorful");
+    localStorage.setItem("theme", "theme-colorful");
+  }
+});
+
 /* End of JS */
+
+
+
     </script>
 
 </body>
