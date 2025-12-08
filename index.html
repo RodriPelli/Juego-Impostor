@@ -325,13 +325,11 @@ body.theme-colorful .revealBox {
     </footer>
 
     <script>
-    /* ============================
+/* ============================
    Juego del Impostor — Lógica
-   (pegar en el <script> de la Parte 1)
    ============================ */
 
 /* ---------- 20 categorías × 20 palabras ---------- */
-/* (orientadas a Argentina; revisé y completé 20 categorías con 20 palabras cada una) */
 const CATEGORIES = {
   "Comidas Argentinas":[
     "Asado","Empanada","Milanesa","Fugazzeta","Pizza al molde","Locro","Humita","Choripán","Provoleta","Ñoquis",
@@ -415,12 +413,12 @@ const CATEGORIES = {
 let state = {
   secretWord: null,
   categoryWasRandom: false,
-  players: [], // {name, role:'IMPOSTOR'|'WORD', seen:false}
+  players: [],
   timer: 6,
   roundActive: false
 };
 
-/* ---------- DOM refs (from Part 1) ---------- */
+/* ---------- DOM refs ---------- */
 const mainScreen = document.getElementById('mainScreen');
 const playerScreen = document.getElementById('playerScreen');
 const revealListScreen = document.getElementById('revealListScreen');
@@ -441,32 +439,22 @@ const revealText = document.getElementById('revealText');
 const backToList = document.getElementById('backToList');
 
 const timerInput = document.getElementById('timerInput');
-const impostorPromptDefault = 1;
-
 const previewCard = document.getElementById('previewCard');
 const previewWords = document.getElementById('previewWords');
 
-const modal = document.getElementById('modal');
-const modalName = document.getElementById('modalName');
-const modalRole = document.getElementById('modalRole');
-const modalDone = document.getElementById('modalDone');
-
 const themeSelect = document.getElementById('themeSelect');
-const footer = document.querySelector('.footer');
 
 /* ---------- Initialize UI ---------- */
 function init(){
-  // populate categories select
   Object.keys(CATEGORIES).forEach(cat=>{
-    const o = document.createElement('option'); o.value = cat; o.textContent = cat;
+    const o = document.createElement('option'); 
+    o.value = cat; 
+    o.textContent = cat;
     categorySelect.appendChild(o);
   });
   categorySelect.value = Object.keys(CATEGORIES)[0];
   updatePreview();
 
-  // default footer fixed already via CSS
-
-  // event bindings
   randomBtn.addEventListener('click', onRandom);
   nextToPlayers.addEventListener('click', ()=> showScreen('playerScreen'));
   addPlayerBtn.addEventListener('click', addPlayerInput);
@@ -474,293 +462,188 @@ function init(){
   backToMain.addEventListener('click', ()=> showScreen('mainScreen'));
   resetGameBtn.addEventListener('click', resetAll);
 
-  themeSelect && themeSelect.addEventListener('change', (e)=> {
-    if(e.target.value === 'colorful') document.body.classList.add('theme-colorful');
-    else document.body.classList.remove('theme-colorful');
-  });
-
-  // small: allow pressing Enter in the textarea to split lines (no extra handlers needed)
-
-  playersTextarea && playersTextarea.addEventListener('input', ()=> {
-    // keep the playerInputs in sync (if user types names there we won't show duplicates)
-  });
-
-  // preview when changing select
   categorySelect.addEventListener('change', updatePreview);
 
-  // back-to-list in revealScreen
-  const backBtn = document.getElementById('backToList');
-  if(backBtn) backBtn.addEventListener('click', ()=> showScreen('revealListScreen'));
+  backToList.addEventListener('click', ()=> showScreen('revealListScreen'));
 }
 init();
 
-/* ---------- Helpers: Screens ---------- */
-function showScreen(screenId){
-  // hide all containers from Part 1 screens
-  const screens = ['mainScreen','playerScreen','revealListScreen','revealScreen'];
-  screens.forEach(id=>{
-    const el = document.getElementById(id);
-    if(el) el.classList.add('hidden');
-  });
-  const target = document.getElementById(screenId);
-  if(target) target.classList.remove('hidden');
+/* ---------- Screen helper ---------- */
+function showScreen(id){
+  ['mainScreen','playerScreen','revealListScreen','revealScreen']
+    .forEach(sc => document.getElementById(sc).classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
 }
 
-/* ---------- Preview tags ---------- */
+/* ---------- Preview ---------- */
 function updatePreview(){
-  previewCard && (previewCard.style.display = 'block');
-  previewWords && (previewWords.innerHTML = '');
+  previewWords.innerHTML = '';
   const cat = categorySelect.value;
-  (CATEGORIES[cat]||[]).slice(0,20).forEach(w=>{
-    const s = document.createElement('span'); s.className = 'tag'; s.textContent = w;
+  CATEGORIES[cat].slice(0,20).forEach(w=>{
+    const s = document.createElement('span');
+    s.className = 'tag';
+    s.textContent = w;
     previewWords.appendChild(s);
   });
 }
 
-/* ---------- Random behavior (does NOT reveal category) ---------- */
+/* ---------- Random word ---------- */
 function onRandom(){
   const cats = Object.keys(CATEGORIES);
-  const c = cats[Math.floor(Math.random() * cats.length)];
+  const c = cats[Math.floor(Math.random()*cats.length)];
   state.secretWord = randomFrom(CATEGORIES[c]);
-  state.categoryWasRandom = true; // category hidden
-  alert('Se seleccionó una palabra al azar. Presioná "Continuar" y asigná jugadores.'); 
-  playClick();
+  state.categoryWasRandom = true;
+  alert('Palabra seleccionada al azar. Continuá con los jugadores.');
 }
 
-/* ---------- Player inputs: add dynamic input rows ---------- */
+/* ---------- Player inputs ---------- */
 function addPlayerInput(){
-  // Create a small input + remove button
   const row = document.createElement('div');
-  row.style.display = 'flex';
-  row.style.gap = '8px';
-  row.style.marginTop = '8px';
+  row.style.display='flex';
+  row.style.gap='8px';
+  row.style.marginTop='8px';
 
-  const input = document.createElement('input');
-  input.type = 'text';
-  input.placeholder = 'Nombre del jugador';
-  input.style.flex = '1';
-  input.className = 'input';
+  const inp = document.createElement('input');
+  inp.type='text';
+  inp.placeholder='Nombre del jugador';
+  inp.className='input';
+  inp.style.flex='1';
 
   const rm = document.createElement('button');
-  rm.className = 'btn small secondary';
-  rm.textContent = 'Eliminar';
-  rm.style.width = 'auto';
-  rm.onclick = ()=> row.remove();
+  rm.textContent='Eliminar';
+  rm.className='btn small secondary';
+  rm.onclick=()=> row.remove();
 
-  row.appendChild(input); row.appendChild(rm);
+  row.appendChild(inp);
+  row.appendChild(rm);
   playerInputs.appendChild(row);
-  input.focus();
 }
 
-/* ---------- Gather players from inputs or textarea ---------- */
+/* ---------- Collect players ---------- */
 function collectPlayers(){
-  let players = [];
-  // first, take any inputs created in playerInputs
-  if(playerInputs){
-    playerInputs.querySelectorAll('input').forEach(inp=>{
-      const v = inp.value.trim();
-      if(v) players.push(v);
+  let arr = [];
+
+  playerInputs.querySelectorAll('input').forEach(i=>{
+    const v=i.value.trim();
+    if(v) arr.push(v);
+  });
+
+  const txt = playersTextarea.value.trim();
+  if(txt){
+    txt.split(/\n+/).forEach(n=>{
+      if(n.trim() && !arr.includes(n.trim())) arr.push(n.trim());
     });
   }
-  // also add players from textarea (one per line)
-  if(playersTextarea){
-    const txt = playersTextarea.value.trim();
-    if(txt){
-      const lines = txt.split(/\n+/).map(l=>l.trim()).filter(Boolean);
-      lines.forEach(l => { if(!players.includes(l)) players.push(l); });
-    }
-  }
-  return players;
+  return arr;
 }
 
-/* ---------- Assign roles and prepare secret word ---------- */
+/* ---------- Assign roles ---------- */
 function assignRoles(){
   const players = collectPlayers();
-  if(players.length < 3) { alert('Se necesitan al menos 3 jugadores.'); return; }
+  if(players.length < 3){ alert('Mínimo 3 jugadores.'); return; }
 
-  // ask impostor count
-  let impostorCount = parseInt(prompt('¿Cuántos impostores? (1 o 2)', '1'), 10);
+  let impostorCount = parseInt(prompt('¿Cuántos impostores? (1 o 2)','1'));
   if(isNaN(impostorCount) || impostorCount < 1) impostorCount = 1;
-  if(impostorCount >= players.length) { alert('La cantidad de impostores debe ser menor que la de jugadores.'); return; }
+  if(impostorCount >= players.length){
+    alert('Los impostores deben ser menos que los jugadores.');
+    return;
+  }
 
-  // timer
   const t = parseInt(timerInput.value,10);
-  state.timer = (isNaN(t) || t < 0) ? 0 : t;
+  state.timer = isNaN(t) ? 0 : t;
 
-  // ensure secretWord exists; if not, take from selected category
   if(!state.secretWord){
     const cat = categorySelect.value;
     state.secretWord = randomFrom(CATEGORIES[cat]);
-    state.categoryWasRandom = false;
   }
 
-  // shuffle and pick impostors
   const idxs = players.map((_,i)=>i).sort(()=>Math.random()-0.5);
-  const impostorIdx = idxs.slice(0, impostorCount);
+  const impostorIdx = idxs.slice(0,impostorCount);
 
-  state.players = players.map((name,i)=>({
-    name,
-    role: impostorIdx.includes(i) ? 'IMPOSTOR' : 'WORD',
-    seen: false
+  state.players = players.map((n,i)=>({
+    name:n,
+    role:impostorIdx.includes(i) ? 'IMPOSTOR':'WORD',
+    seen:false
   }));
 
   state.roundActive = true;
   renderPlayersList();
   showScreen('revealListScreen');
-  playRevealStart();
 }
 
-/* ---------- Render players as clickable buttons ---------- */
+/* ---------- Render list ---------- */
 function renderPlayersList(){
   playerButtonsDiv.innerHTML = '';
-  if(!state.players.length){ playerButtonsDiv.textContent = 'Sin jugadores'; return; }
-
-  state.players.forEach((p, i)=>{
-    const btn = document.createElement('button');
-    btn.className = 'player-btn';
-    btn.style.display = 'block';
-    btn.textContent = p.name + (p.seen ? ' • VISTO' : '');
-    btn.onclick = ()=> openPlayerReveal(i);
-    playerButtonsDiv.appendChild(btn);
+  state.players.forEach((p,i)=>{
+    const b = document.createElement('button');
+    b.className='player-btn';
+    b.textContent = p.name + (p.seen ? ' • VISTO':'');
+    b.onclick=()=> openPlayerReveal(i);
+    playerButtonsDiv.appendChild(b);
   });
 }
 
-/* ---------- Reveal flow for a single player ---------- */
-let revealTimeout = null;
-function openPlayerReveal(index){
+/* ---------- Reveal flow ---------- */
+let revealTimeout=null;
+
+function openPlayerReveal(i){
   if(!state.roundActive) return;
-  const p = state.players[index];
-  // show reveal screen (container in Part1)
-  const revealTextDiv = document.getElementById('revealText');
-  if(!revealTextDiv) return;
 
-  if(p.role === 'IMPOSTOR'){
-    revealTextDiv.textContent = 'SOS EL IMPOSTOR 😈';
-    modalRole.className = 'role impostor';
-    playImpostor();
-  } else {
-    revealTextDiv.textContent = state.secretWord || '---';
-    modalRole.className = 'role word';
-    playReveal();
-  }
+  const p = state.players[i];
+  revealText.textContent = (p.role==='IMPOSTOR') ? 'SOS EL IMPOSTOR 😈' : state.secretWord;
 
-  // mark seen
-  state.players[index].seen = true;
+  p.seen = true;
   renderPlayersList();
 
-  // show revealScreen and hide list
   showScreen('revealScreen');
 
-  // timer auto-close if configured
   clearTimeout(revealTimeout);
   if(state.timer > 0){
-    revealTimeout = setTimeout(()=> {
-      // after time, auto go back and auto open next unseen
+    revealTimeout = setTimeout(()=>{
       showScreen('revealListScreen');
       autoOpenNextUnseen();
-    }, state.timer * 1000);
+    }, state.timer*1000);
   }
 }
 
-/* ---------- Auto-open next unseen ---------- */
+/* ---------- Auto open next ---------- */
 function autoOpenNextUnseen(){
   const next = state.players.findIndex(p=>!p.seen);
-  if(next === -1){
-    finishRound();
-    return;
-  }
-  // small delay so players can pass device
+  if(next === -1){ finishRound(); return; }
   setTimeout(()=> openPlayerReveal(next), 350);
 }
 
 /* ---------- Finish round ---------- */
 function finishRound(){
   state.roundActive = false;
-  alert('Ronda finalizada. Pueden iniciar una nueva.');
+  alert('Ronda finalizada.');
 }
 
-/* ---------- Reset everything ---------- */
+/* ---------- Reset ---------- */
 function resetAll(){
-  if(!confirm('Reiniciar partida y limpiar todo?')) return;
+  if(!confirm('¿Reiniciar partida?')) return;
   state = { secretWord:null, categoryWasRandom:false, players:[], timer:6, roundActive:false };
-  // clear UI
-  playerInputs.innerHTML = '';
-  playersTextarea.value = '';
-  playerButtonsDiv.innerHTML = '';
-  previewWords.innerHTML = '';
-  // return to main screen
+
+  playerInputs.innerHTML='';
+  playersTextarea.value='';
+  playerButtonsDiv.innerHTML='';
+  previewWords.innerHTML='';
+
   showScreen('mainScreen');
 }
 
-/* ---------- utility functions ---------- */
+/* ---------- Utils ---------- */
 function randomFrom(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 
-/* ---------- simple audio feedback (WebAudio) ---------- */
-const audioCtx = (window.AudioContext || window.webkitAudioContext) ? new (window.AudioContext || window.webkitAudioContext)() : null;
-function playTone(freq, duration=0.08, type='sine', vol=0.06){
-  if(!audioCtx) return;
-  try {
-    const o = audioCtx.createOscillator();
-    const g = audioCtx.createGain();
-    o.type = type; o.frequency.value = freq; g.gain.value = vol;
-    o.connect(g); g.connect(audioCtx.destination);
-    o.start();
-    setTimeout(()=> { o.stop(); }, duration*1000);
-  } catch(e){}
-}
-function playClick(){ playTone(880,0.06,'sine',0.04); }
-function playReveal(){ playTone(660,0.12,'triangle',0.06); }
-function playImpostor(){ playTone(140,0.2,'sawtooth',0.09); }
-function playRevealStart(){ playTone(520,0.08,'sine',0.05); }
-
-/* ---------- keyboard helpers ---------- */
-document.addEventListener('keydown', (e)=>{
-  if(e.key === 'Escape'){
-    // go back to list if modal open
-    if(!document.getElementById('revealScreen').classList.contains('hidden')) showScreen('revealListScreen');
+/* ---------- Escape key ---------- */
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    if(!revealScreen.classList.contains('hidden')){
+      showScreen('revealListScreen');
+    }
   }
 });
-
-/* expose some functions for debugging if needed */
-window._impostorGame = { state, CATEGORIES, resetAll };
-
-/* ------------------------------
-   CAMBIO DE TEMA
---------------------------------*/
-
-const themeSelect = document.getElementById("themeSelect");
-
-// Mantener selección si recarga
-if (localStorage.getItem("theme")) {
-  const saved = localStorage.getItem("theme");
-  document.body.classList.add(saved);
-  themeSelect.value = saved.replace("theme-", "");
-}
-
-themeSelect.addEventListener("change", () => {
-  document.body.classList.remove("theme-dark", "theme-colorful");
-
-  if (themeSelect.value === "light") {
-    document.body.className = "";
-    localStorage.setItem("theme", "");
-  }
-
-  if (themeSelect.value === "dark") {
-    document.body.classList.add("theme-dark");
-    localStorage.setItem("theme", "theme-dark");
-  }
-
-  if (themeSelect.value === "colorful") {
-    document.body.classList.add("theme-colorful");
-    localStorage.setItem("theme", "theme-colorful");
-  }
-});
-
-/* End of JS */
-
-
-
-    </script>
+</script>
 
 </body>
 </html>
