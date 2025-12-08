@@ -1,214 +1,241 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Juego del Impostor</title>
-
-<style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Juego del Impostor</title>
+  <style>
     body {
-        font-family: Arial, sans-serif;
-        background: #ffffff;
-        color: #222;
-        margin: 0;
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-    }
-
-    h1 {
-        text-align: center;
-        margin-top: 0;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background: #121212;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
     }
 
     .container {
-        max-width: 600px;
-        margin: auto;
-        flex: 1;
+      width: 100%;
+      max-width: 500px;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .screen {
+      display: none;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    .boton {
+      padding: 10px 20px;
+      margin: 5px;
+      border: none;
+      border-radius: 5px;
+      background-color: #ff4d4d;
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .boton:hover {
+      background-color: #e04343;
+    }
+
+    .input-text {
+      width: calc(100% - 22px);
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 4px;
+      border: none;
+      font-size: 16px;
+    }
+
+    .lista-jugadores {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .jugador {
+      padding: 10px;
+      background-color: #1e1e2e;
+      border-radius: 5px;
+      cursor: pointer;
+      text-align: center;
+      transition: background-color 0.3s;
+    }
+
+    .jugador:hover {
+      background-color: #2a2a3d;
+    }
+
+    .revelado {
+      background-color: #33334d !important;
+      color: #ffd700;
+      font-weight: bold;
     }
 
     label {
-        font-weight: bold;
+      margin-right: 10px;
     }
 
-    select, input, button {
-        width: 100%;
-        padding: 10px;
-        margin-top: 8px;
-        margin-bottom: 15px;
-        border-radius: 5px;
-        border: 1px solid #999;
-        font-size: 16px;
+    select {
+      padding: 8px;
+      border-radius: 5px;
+      border: none;
+      font-size: 16px;
     }
-
-    #playersList button {
-        width: 100%;
-        margin-top: 8px;
-        padding: 14px;
-        background: #444;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        font-size: 17px;
-    }
-
-    #playersList button:hover {
-        opacity: 0.85;
-    }
-
-    #result {
-        text-align: center;
-        padding: 15px;
-        font-size: 22px;
-        font-weight: bold;
-    }
-
-    footer {
-        text-align: center;
-        margin-top: 40px;
-        padding: 20px;
-        font-size: 18px;
-        opacity: 0.7;
-    }
-
-    /* TEMAS */
-    body.dark {
-        background: #111;
-        color: #fff;
-    }
-    body.dark input, body.dark select, body.dark button {
-        background: #222;
-        color: white;
-        border: 1px solid #555;
-    }
-
-    body.colorful {
-        background: linear-gradient(45deg, #ff00ff, #00d9ff, #55ff00);
-        background-size: 400% 400%;
-        animation: colors 6s ease infinite;
-        color: #fff;
-    }
-
-    body.colorful button,
-    body.colorful input,
-    body.colorful select {
-        background: rgba(255,255,255,0.25);
-        color: #fff;
-        border: 1px solid #fff;
-    }
-
-    @keyframes colors {
-        0%{background-position:0% 50%;}
-        50%{background-position:100% 50%;}
-        100%{background-position:0% 50%;}
-    }
-</style>
+  </style>
 </head>
-
 <body>
-<div class="container">
+  <div class="container">
 
-<h1>Juego del Impostor 👀</h1>
+    <h1>Juego del Impostor</h1>
 
-<label>Tema visual:</label>
-<select id="themeSelector" onchange="changeTheme()">
-    <option value="light">Claro</option>
-    <option value="dark">Oscuro</option>
-    <option value="colorful">Colorido</option>
-</select>
+    <!-- Pantalla 1: elegir categoría -->
+    <div id="screen-categoria" class="screen active">
+      <h2>Elegí una categoría</h2>
+      <select id="categoria">
+        <option value="frutas">Frutas</option>
+        <option value="animales">Animales</option>
+        <option value="colores">Colores</option>
+        <option value="objetos">Objetos</option>
+        <option value="lugares">Lugares</option>
+      </select>
+      <br>
+      <button class="boton" onclick="goToPlayers()">Siguiente</button>
+    </div>
 
-<label>Agregar jugador:</label>
-<input type="text" id="playerName" placeholder="Nombre del jugador">
-<button onclick="addPlayer()">Agregar</button>
+    <!-- Pantalla 2: ingresar jugadores -->
+    <div id="screen-jugadores" class="screen">
+      <h2>Ingresá los participantes</h2>
+      <input type="text" id="input-nombre" class="input-text" placeholder="Nombre del jugador">
+      <button class="boton" onclick="agregarJugador()">Agregar</button>
+      <div class="lista-jugadores" id="lista-jugadores"></div>
+      <button class="boton" onclick="empezarJuego()">Iniciar juego</button>
+      <button class="boton" onclick="resetear()">Volver</button>
+    </div>
 
-<h3>Jugadores:</h3>
-<div id="playersList"></div>
+    <!-- Pantalla 3: mostrar nombres + revelar -->
+    <div id="screen-revelar" class="screen">
+      <h2>Tocá tu nombre para ver tu palabra</h2>
+      <div class="lista-jugadores" id="lista-revelar"></div>
+      <button class="boton" onclick="resetear()">Reiniciar</button>
+    </div>
 
-<button onclick="startGame()">Iniciar juego</button>
-
-<div id="result"></div>
-
+  </div>
 <script>
-let players = [];
-let assignedWords = {};
-let impostor = "";
-let categories = {
-    "Animales": ["Perro","Gato","Elefante","Tigre","León","Caballo","Tortuga","Mono","Pez","Conejo","Jirafa","Lobo","Zorro","Foca","Delfín","Aguila","Oveja","Vaca","Cabra","Serpiente"],
-    "Comidas": ["Pizza","Hamburguesa","Taco","Sushi","Pasta","Ensalada","Empanada","Helado","Asado","Milanesa","Pan","Tortilla","Arroz","Sopa","Queso","Sandwich","Chocolate","Café","Té","Galletas"],
-    "Colores": ["Rojo","Azul","Verde","Amarillo","Negro","Blanco","Violeta","Rosa","Turquesa","Marrón","Naranja","Gris","Celeste","Dorado","Plateado","Cian","Magenta","Beige","Bordo","Lima"],
-    "Países": ["Argentina","Brasil","Chile","Uruguay","Perú","Bolivia","Paraguay","México","España","Italia","Francia","Alemania","Japón","China","Rusia","Canadá","EEUU","Portugal","Colombia","Venezuela"],
-    "Objetos": ["Mesa","Silla","Cuchara","Teléfono","Cable","Libro","Campera","Llave","Botella","Bolso","Reloj","Televisor","Cama","Ventana","Puerta","Lapicera","Zapatilla","Guante","Caja","Papel"],
-    "Profesiones": ["Doctor","Profesor","Ingeniero","Abogado","Panadero","Carpintero","Enfermera","Mecánico","Pintor","Actor","Policía","Bombero","Cocinero","Programador","Electricista","Plomero","Veterinario","Cantante","Soldado","Jardinero"],
-    "Películas": ["Titanic","Matrix","Avatar","Shrek","Cars","Toy Story","Gladiador","Coco","Up","Frozen","Rocky","Terminator","Alien","Harry Potter","Narnia","Joker","Batman","Superman","Spiderman","Dune"],
-    "Series": ["Friends","Breaking Bad","Vikings","Dark","Loki","The Office","Sherlock","Merlina","El Marginal","Vis a Vis","Prison Break","Narcos","Lost","Peaky Blinders","Stranger Things","GOT","The Boys","Dexter","Casa de Papel","House"],
-    "Marcas": ["Nike","Adidas","Puma","Reebok","Coca-Cola","Pepsi","Sony","Samsung","Apple","Xiaomi","Ford","Chevrolet","Toyota","Honda","LG","Lenovo","Dell","HP","McDonalds","Burger King"],
-    "Frutas": ["Manzana","Pera","Banana","Ananá","Durazno","Ciruela","Cereza","Kiwi","Naranja","Mandarina","Uva","Sandía","Melón","Pomelo","Frutilla","Higo","Mango","Maracuyá","Arándano","Limón"],
-    "Verduras": ["Lechuga","Tomate","Zanahoria","Cebolla","Ajo","Papa","Batata","Pepino","Pimiento","Brócoli","Coliflor","Rábano","Espinaca","Acelga","Zapallo","Choclo","Berenjena","Repollo","Apio","Arvejas"],
-    "Bebidas": ["Agua","Coca","Fanta","Sprite","Jugo","Cerveza","Vino","Vodka","Whisky","Té","Café","Chocolate","Limonada","Gatorade","Speed","Fernet","Gin","Sidra","Agua tónica","Malta"],
-    "Muebles": ["Mesa","Silla","Cama","Placard","Biblioteca","Sillón","Escritorio","Banco","Estante","Cómoda","Ropero","Mesa ratona","Sillón reclinable","Caja","Lámpara","Ropero","Perchero","Heladera","Freezer","Horno"],
-    "Tecnología": ["Computadora","Celular","Tablet","Impresora","Router","TV","Monitor","Mouse","Teclado","Auriculares","USB","SSD","Pendrive","Cámara","Drone","Parlante","Microfono","Smartwatch","Notebook","Cargador"],
-    "Transportes": ["Auto","Moto","Bici","Colectivo","Camión","Barco","Avión","Tren","Subte","Patineta","Scooter","Taxi","Remis","Helicóptero","Yate","Lancha","Quad","Cohete","Tractor","Submarino"],
-    "Lugares": ["Playa","Montaña","Ciudad","Bosque","Desierto","Río","Lago","Parque","Museo","Escuela","Hospital","Biblioteca","Estadio","Gimnasio","Restaurante","Hotel","Casa","Campo","Isla","Oficina"],
-    "Emociones": ["Feliz","Triste","Enojado","Nervioso","Ansioso","Calmo","Contento","Eufórico","Frustrado","Cansado","Aburrido","Motivado","Orgulloso","Celoso","Satisfecho","Tímido","Seguro","Confundido","Emocionado","Relajado"],
-    "Deportes": ["Fútbol","Basket","Tenis","Natación","Voley","Rugby","Golf","Boxeo","Hockey","Atletismo","Ciclismo","Karate","Judo","Handball","Automovilismo","Surf","Skate","Esgrima","Escalada","Remo"],
-    "Ropa": ["Camisa","Pantalón","Campera","Buzo","Remera","Short","Medias","Zapatillas","Gorro","Guantes","Bufanda","Vestido","Pollera","Corbata","Cinturón","Botas","Sandalias","Jeans","Leggins","Top"],
-    "Instrumentos": ["Guitarra","Piano","Bajo","Batería","Violín","Flauta","Saxofón","Trompeta","Arpa","Ukelele","Tambor","Acordeón","Ocarina","Clarinete","Bandoneón","Cítara","Conga","Bongó","Maracas","Triángulo"]
-};
+  // Datos
+  const palabras = {
+    frutas: ["manzana", "banana", "pera", "naranja", "uva", "sandía", "melon"],
+    animales: ["perro", "gato", "elefante", "jirafa", "leon", "tigre", "cebra"],
+    colores: ["rojo", "azul", "verde", "amarillo", "negro", "blanco", "morado"],
+    objetos: ["pelota","silla","mesa","lapiz","telefono","libro","reloj"],
+    lugares: ["playa","escuela","parque","ciudad","casa","montaña","bosque"]
+  };
 
-function changeTheme(){
-    document.body.className = "";
-    let theme = document.getElementById("themeSelector").value;
-    if(theme === "dark") document.body.classList.add("dark");
-    if(theme === "colorful") document.body.classList.add("colorful");
-}
+  let jugadores = [];
+  let asignaciones = {};
+  let categoriaSeleccionada = null;
 
-function addPlayer(){
-    let name = document.getElementById("playerName").value.trim();
-    if(name === "") return;
-    players.push(name);
-    document.getElementById("playerName").value = "";
-    renderPlayers();
-}
+  function goToPlayers() {
+    categoriaSeleccionada = document.getElementById("categoria").value;
+    document.getElementById("screen-categoria").classList.remove("active");
+    document.getElementById("screen-jugadores").classList.add("active");
+  }
 
-function renderPlayers(){
-    let div = document.getElementById("playersList");
-    div.innerHTML = "";
-    players.forEach(p=>{
-        let btn = document.createElement("button");
-        btn.textContent = p;
-        btn.onclick = ()=> revealWord(p);
-        div.appendChild(btn);
-    });
-}
-
-function startGame(){
-    if(players.length < 3){
-        alert("Necesitás mínimo 3 jugadores, reina.");
-        return;
+  function agregarJugador() {
+    const input = document.getElementById("input-nombre");
+    let nombre = input.value.trim();
+    if (!nombre) {
+      alert("Nombre inválido.");
+      return;
     }
+    if (jugadores.includes(nombre)) {
+      alert("Ese nombre ya fue agregado.");
+      return;
+    }
+    jugadores.push(nombre);
+    input.value = "";
+    renderJugadores();
+  }
 
-    let keys = Object.keys(categories);
-    let randomCat = keys[Math.floor(Math.random()*keys.length)];
-    let words = categories[randomCat];
-    let selectedWord = words[Math.floor(Math.random()*words.length)];
-
-    impostor = players[Math.floor(Math.random()*players.length)];
-
-    assignedWords = {};
-    players.forEach(p=>{
-        assignedWords[p] = (p === impostor) ? "IMPOSTOR" : selectedWord;
+  function renderJugadores() {
+    const lista = document.getElementById("lista-jugadores");
+    lista.innerHTML = "";
+    jugadores.forEach(n => {
+      const div = document.createElement("div");
+      div.textContent = n;
+      div.className = "jugador";
+      lista.appendChild(div);
     });
+  }
 
-    document.getElementById("result").textContent = "Juego iniciado. Cada jugador toca su nombre.";
-}
+  function empezarJuego() {
+    if (jugadores.length < 3) {
+      alert("Se necesitan al menos 3 jugadores.");
+      return;
+    }
+    // Elegir impostor al azar
+    const idxImpostor = Math.floor(Math.random() * jugadores.length);
+    jugadores.forEach((n,i) => {
+      if (i === idxImpostor) {
+        asignaciones[n] = "Impostor";
+      } else {
+        // palabra aleatoria según categoría
+        const lista = palabras[categoriaSeleccionada];
+        asignaciones[n] = lista[Math.floor(Math.random() * lista.length)];
+      }
+    });
+    mostrarRevelar();
+  }
 
-function revealWord(name){
-    alert(name + ": " + assignedWords[name]);
-}
+  function mostrarRevelar() {
+    document.getElementById("screen-jugadores").classList.remove("active");
+    document.getElementById("screen-revelar").classList.add("active");
+    const lista = document.getElementById("lista-revelar");
+    lista.innerHTML = "";
+    jugadores.forEach(n => {
+      const div = document.createElement("div");
+      div.textContent = n;
+      div.className = "jugador";
+      div.onclick = () => revelar(n, div);
+      lista.appendChild(div);
+    });
+  }
+
+  function revelar(nombre, element) {
+    if (!asignaciones[nombre]) return;
+    element.textContent = nombre + ": " + asignaciones[nombre];
+    element.classList.add("revelado");
+    // Opcional — deshabilitar para que no revele otra vez
+    element.onclick = null;
+  }
+
+  function resetear() {
+    // Reiniciar todo
+    jugadores = [];
+    asignaciones = {};
+    categoriaSeleccionada = null;
+    document.getElementById("screen-revelar").classList.remove("active");
+    document.getElementById("screen-jugadores").classList.remove("active");
+    document.getElementById("screen-categoria").classList.add("active");
+    document.getElementById("lista-jugadores").innerHTML = "";
+    document.getElementById("lista-revelar").innerHTML = "";
+  }
+
 </script>
-
-<footer>Hecho con 🤍</footer>
-
 </body>
 </html>
