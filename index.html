@@ -1,241 +1,254 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Juego del Impostor</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-      background: #121212;
-      color: #ffffff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Juego del Impostor</title>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    transition: background 1s, color 1s;
+  }
 
-    .container {
-      width: 100%;
-      max-width: 500px;
-      padding: 20px;
-      box-sizing: border-box;
-    }
+  .container {
+    width: 100%;
+    max-width: 500px;
+    padding: 20px;
+    margin: auto;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 
-    h1 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
 
-    .screen {
-      display: none;
-    }
+  .screen { display: none; }
+  .screen.active { display: block; }
 
-    .screen.active {
-      display: block;
-    }
+  .boton {
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+  }
 
-    .boton {
-      padding: 10px 20px;
-      margin: 5px;
-      border: none;
-      border-radius: 5px;
-      background-color: #ff4d4d;
-      color: white;
-      cursor: pointer;
-      font-size: 16px;
-    }
+  .input-text {
+    width: calc(100% - 22px);
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 4px;
+    border: none;
+    font-size: 16px;
+  }
 
-    .boton:hover {
-      background-color: #e04343;
-    }
+  .lista-jugadores {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
 
-    .input-text {
-      width: calc(100% - 22px);
-      padding: 10px;
-      margin: 5px 0;
-      border-radius: 4px;
-      border: none;
-      font-size: 16px;
-    }
+  .jugador {
+    padding: 10px;
+    background-color: #1e1e2e;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s;
+  }
 
-    .lista-jugadores {
-      margin-top: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
+  .jugador:hover { background-color: #2a2a3d; }
+  .revelado { font-weight: bold; color: #ffd700; background-color: #33334d !important; }
 
-    .jugador {
-      padding: 10px;
-      background-color: #1e1e2e;
-      border-radius: 5px;
-      cursor: pointer;
-      text-align: center;
-      transition: background-color 0.3s;
-    }
+  select, label {
+    margin: 5px 0;
+    font-size: 16px;
+  }
 
-    .jugador:hover {
-      background-color: #2a2a3d;
-    }
-
-    .revelado {
-      background-color: #33334d !important;
-      color: #ffd700;
-      font-weight: bold;
-    }
-
-    label {
-      margin-right: 10px;
-    }
-
-    select {
-      padding: 8px;
-      border-radius: 5px;
-      border: none;
-      font-size: 16px;
-    }
-  </style>
+  /* Temas */
+  body.tema-claro { background: #f5f5f5; color: #000; }
+  body.tema-claro .jugador { background: #ddd; color: #000; }
+  body.tema-claro .jugador:hover { background: #ccc; }
+  body.tema-oscuro { background: #121212; color: #fff; }
+  body.tema-oscuro .jugador { background: #1e1e2e; color: #fff; }
+  body.tema-oscuro .jugador:hover { background: #2a2a3d; }
+  body.tema-colorido { animation: colores 10s infinite alternate; color: #fff; }
+  body.tema-colorido .jugador { background-color: rgba(255,255,255,0.2); }
+  @keyframes colores {
+    0% { background-color: #ff4d4d; }
+    25% { background-color: #4dff4d; }
+    50% { background-color: #4d4dff; }
+    75% { background-color: #ff4dff; }
+    100% { background-color: #ffd24d; }
+  }
+</style>
 </head>
-<body>
-  <div class="container">
+<body class="tema-oscuro">
 
-    <h1>Juego del Impostor</h1>
+<div class="container">
+<h1>Juego del Impostor</h1>
 
-    <!-- Pantalla 1: elegir categoría -->
-    <div id="screen-categoria" class="screen active">
-      <h2>Elegí una categoría</h2>
-      <select id="categoria">
-        <option value="frutas">Frutas</option>
-        <option value="animales">Animales</option>
-        <option value="colores">Colores</option>
-        <option value="objetos">Objetos</option>
-        <option value="lugares">Lugares</option>
-      </select>
-      <br>
-      <button class="boton" onclick="goToPlayers()">Siguiente</button>
-    </div>
+<!-- Pantalla tema y categoría -->
+<div id="screen-config" class="screen active">
+  <h2>Configuración del Juego</h2>
 
-    <!-- Pantalla 2: ingresar jugadores -->
-    <div id="screen-jugadores" class="screen">
-      <h2>Ingresá los participantes</h2>
-      <input type="text" id="input-nombre" class="input-text" placeholder="Nombre del jugador">
-      <button class="boton" onclick="agregarJugador()">Agregar</button>
-      <div class="lista-jugadores" id="lista-jugadores"></div>
-      <button class="boton" onclick="empezarJuego()">Iniciar juego</button>
-      <button class="boton" onclick="resetear()">Volver</button>
-    </div>
+  <label for="tema">Elegí un tema:</label>
+  <select id="tema" onchange="cambiarTema()">
+    <option value="oscuro">Oscuro</option>
+    <option value="claro">Claro</option>
+    <option value="colorido">Colorido</option>
+  </select>
 
-    <!-- Pantalla 3: mostrar nombres + revelar -->
-    <div id="screen-revelar" class="screen">
-      <h2>Tocá tu nombre para ver tu palabra</h2>
-      <div class="lista-jugadores" id="lista-revelar"></div>
-      <button class="boton" onclick="resetear()">Reiniciar</button>
-    </div>
+  <label for="numImpostores">Cantidad de impostores:</label>
+  <select id="numImpostores">
+    <option value="1">1 impostor</option>
+    <option value="2">2 impostores</option>
+  </select>
 
-  </div>
+  <button class="boton" onclick="goToPlayers()">Siguiente</button>
+</div>
+
+<!-- Pantalla jugadores -->
+<div id="screen-jugadores" class="screen">
+  <h2>Ingresá los jugadores</h2>
+  <input type="text" id="input-nombre" class="input-text" placeholder="Nombre del jugador">
+  <button class="boton" onclick="agregarJugador()">Agregar</button>
+  <div class="lista-jugadores" id="lista-jugadores"></div>
+  <button class="boton" onclick="empezarJuego()">Iniciar Juego</button>
+  <button class="boton" onclick="resetear()">Volver</button>
+</div>
+
+<!-- Pantalla revelar -->
+<div id="screen-revelar" class="screen">
+  <h2>Tocá tu nombre para ver tu palabra</h2>
+  <div class="lista-jugadores" id="lista-revelar"></div>
+  <button class="boton" onclick="resetear()">Reiniciar</button>
+</div>
+
 <script>
-  // Datos
-  const palabras = {
-    frutas: ["manzana", "banana", "pera", "naranja", "uva", "sandía", "melon"],
-    animales: ["perro", "gato", "elefante", "jirafa", "leon", "tigre", "cebra"],
-    colores: ["rojo", "azul", "verde", "amarillo", "negro", "blanco", "morado"],
-    objetos: ["pelota","silla","mesa","lapiz","telefono","libro","reloj"],
-    lugares: ["playa","escuela","parque","ciudad","casa","montaña","bosque"]
-  };
+const palabras = {
+  frutas:["manzana","banana","pera","naranja","uva","sandia","melon","kiwi","durazno","cereza","pomelo","limon","mandarina","frutilla","anona","mango","papaya","higo","grosella","arandano"],
+  animales:["perro","gato","elefante","jirafa","leon","tigre","cebra","lobo","mono","raton","oso","pajaro","tortuga","delfin","vaca","cerdo","conejo","caballo","serpiente","canguro"],
+  colores:["rojo","azul","verde","amarillo","negro","blanco","morado","naranja","rosa","celeste","violeta","lila","beige","gris","turquesa","dorado","plateado","fucsia","cyan","magenta"],
+  objetos:["pelota","silla","mesa","lapiz","telefono","libro","reloj","computadora","lampara","mochila","sombrero","bateria","cuaderno","bolsa","taza","cuchara","tenedor","cuchillo","espejo","ventilador"],
+  lugares:["playa","escuela","parque","ciudad","casa","montaña","bosque","rio","lago","ciudadela","pueblo","país","continente","isla","desierto","valle","caverna","selva","catedral","biblioteca"]
+};
 
-  let jugadores = [];
-  let asignaciones = {};
-  let categoriaSeleccionada = null;
+let jugadores = [];
+let asignaciones = {};
+let categoriaSeleccionada = null;
+let numImpostores = 1;
 
-  function goToPlayers() {
-    categoriaSeleccionada = document.getElementById("categoria").value;
-    document.getElementById("screen-categoria").classList.remove("active");
-    document.getElementById("screen-jugadores").classList.add("active");
+function cambiarTema() {
+  const tema = document.getElementById("tema").value;
+  document.body.className = "";
+  if(tema==="claro") document.body.classList.add("tema-claro");
+  else if(tema==="oscuro") document.body.classList.add("tema-oscuro");
+  else document.body.classList.add("tema-colorido");
+}
+
+function goToPlayers() {
+  numImpostores = parseInt(document.getElementById("numImpostores").value);
+  // Elegir categoría aleatoria sin mostrarla
+  const keys = Object.keys(palabras);
+  categoriaSeleccionada = keys[Math.floor(Math.random()*keys.length)];
+  document.getElementById("screen-config").classList.remove("active");
+  document.getElementById("screen-jugadores").classList.add("active");
+}
+
+function agregarJugador() {
+  const input = document.getElementById("input-nombre");
+  let nombre = input.value.trim();
+  if(!nombre) { alert("Nombre inválido."); return; }
+  if(jugadores.includes(nombre)) { alert("Ese nombre ya fue agregado."); return; }
+  jugadores.push(nombre);
+  input.value = "";
+  renderJugadores();
+}
+
+function renderJugadores() {
+  const lista = document.getElementById("lista-jugadores");
+  lista.innerHTML = "";
+  jugadores.forEach(n=>{
+    const div = document.createElement("div");
+    div.textContent = n;
+    div.className = "jugador";
+    lista.appendChild(div);
+  });
+}
+
+function empezarJuego() {
+  if(jugadores.length < 3) { alert("Se necesitan al menos 3 jugadores."); return; }
+
+  // Elegir impostores
+  const impostoresIndices = [];
+  while(impostoresIndices.length < numImpostores){
+    const idx = Math.floor(Math.random()*jugadores.length);
+    if(!impostoresIndices.includes(idx)) impostoresIndices.push(idx);
   }
 
-  function agregarJugador() {
-    const input = document.getElementById("input-nombre");
-    let nombre = input.value.trim();
-    if (!nombre) {
-      alert("Nombre inválido.");
-      return;
-    }
-    if (jugadores.includes(nombre)) {
-      alert("Ese nombre ya fue agregado.");
-      return;
-    }
-    jugadores.push(nombre);
-    input.value = "";
-    renderJugadores();
+  // Elegir palabra común
+  const listaPalabras = palabras[categoriaSeleccionada];
+  const palabraComun = listaPalabras[Math.floor(Math.random()*listaPalabras.length)];
+
+  jugadores.forEach((j,i)=>{
+    if(impostoresIndices.includes(i)) asignaciones[j] = "Impostor";
+    else asignaciones[j] = palabraComun;
+  });
+
+  // Opción de 1 o 2 jugadores con palabra diferente
+  const diffCount = Math.min(2,jugadores.length - numImpostores);
+  const indices = jugadores.map((_,i)=>i).filter(i=>!impostoresIndices.includes(i));
+  for(let k=0; k<diffCount; k++){
+    const rand = indices.splice(Math.floor(Math.random()*indices.length),1)[0];
+    asignaciones[jugadores[rand]] = listaPalabras[Math.floor(Math.random()*listaPalabras.length)];
   }
 
-  function renderJugadores() {
-    const lista = document.getElementById("lista-jugadores");
-    lista.innerHTML = "";
-    jugadores.forEach(n => {
-      const div = document.createElement("div");
-      div.textContent = n;
-      div.className = "jugador";
-      lista.appendChild(div);
-    });
-  }
+  mostrarRevelar();
+}
 
-  function empezarJuego() {
-    if (jugadores.length < 3) {
-      alert("Se necesitan al menos 3 jugadores.");
-      return;
-    }
-    // Elegir impostor al azar
-    const idxImpostor = Math.floor(Math.random() * jugadores.length);
-    jugadores.forEach((n,i) => {
-      if (i === idxImpostor) {
-        asignaciones[n] = "Impostor";
-      } else {
-        // palabra aleatoria según categoría
-        const lista = palabras[categoriaSeleccionada];
-        asignaciones[n] = lista[Math.floor(Math.random() * lista.length)];
-      }
-    });
-    mostrarRevelar();
-  }
+function mostrarRevelar() {
+  document.getElementById("screen-jugadores").classList.remove("active");
+  document.getElementById("screen-revelar").classList.add("active");
+  const lista = document.getElementById("lista-revelar");
+  lista.innerHTML = "";
+  jugadores.forEach(n=>{
+    const div = document.createElement("div");
+    div.textContent = n;
+    div.className = "jugador";
+    div.onclick = ()=>revelar(n,div);
+    lista.appendChild(div);
+  });
+}
 
-  function mostrarRevelar() {
-    document.getElementById("screen-jugadores").classList.remove("active");
-    document.getElementById("screen-revelar").classList.add("active");
-    const lista = document.getElementById("lista-revelar");
-    lista.innerHTML = "";
-    jugadores.forEach(n => {
-      const div = document.createElement("div");
-      div.textContent = n;
-      div.className = "jugador";
-      div.onclick = () => revelar(n, div);
-      lista.appendChild(div);
-    });
-  }
+function revelar(nombre, element){
+  if(!asignaciones[nombre]) return;
+  element.textContent = nombre + ": " + asignaciones[nombre];
+  element.classList.add("revelado");
+  element.onclick = null;
+}
 
-  function revelar(nombre, element) {
-    if (!asignaciones[nombre]) return;
-    element.textContent = nombre + ": " + asignaciones[nombre];
-    element.classList.add("revelado");
-    // Opcional — deshabilitar para que no revele otra vez
-    element.onclick = null;
-  }
-
-  function resetear() {
-    // Reiniciar todo
-    jugadores = [];
-    asignaciones = {};
-    categoriaSeleccionada = null;
-    document.getElementById("screen-revelar").classList.remove("active");
-    document.getElementById("screen-jugadores").classList.remove("active");
-    document.getElementById("screen-categoria").classList.add("active");
-    document.getElementById("lista-jugadores").innerHTML = "";
-    document.getElementById("lista-revelar").innerHTML = "";
-  }
-
+function resetear(){
+  jugadores = [];
+  asignaciones = {};
+  categoriaSeleccionada = null;
+  numImpostores = 1;
+  document.getElementById("screen-revelar").classList.remove("active");
+  document.getElementById("screen-jugadores").classList.remove("active");
+  document.getElementById("screen-config").classList.add("active");
+  document.getElementById("lista-jugadores").innerHTML = "";
+  document.getElementById("lista-revelar").innerHTML = "";
+}
 </script>
 </body>
 </html>
