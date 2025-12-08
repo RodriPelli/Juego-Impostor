@@ -9,28 +9,37 @@
     margin: 0;
     padding: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
     transition: background 1s, color 0.5s;
   }
 
   .container {
-    width: 100%;
-    max-width: 500px;
-    padding: 20px;
-    margin: 20px auto;
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box;
   }
 
   h1 {
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    font-size: 3rem;
+    background: linear-gradient(45deg, #ff4d4d, #4dff4d, #4d4dff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     text-align: center;
-    margin-bottom: 25px;
-    font-size: 2rem;
-    color: #ff4d4d;
-    text-shadow: 1px 1px 2px #000;
+    margin-bottom: 30px;
+    text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
   }
 
-  .screen { display: none; }
+  .screen { display: none; width: 100%; }
   .screen.active { display: block; }
 
   .boton {
@@ -45,7 +54,6 @@
     color: #fff;
     background-color: #ff4d4d;
   }
-
   .boton:hover { background-color: #e04343; transform: scale(1.05); }
 
   .input-text {
@@ -75,7 +83,6 @@
     color: #fff;
     user-select: none;
   }
-
   .jugador:hover { background-color: #2a2a3d; }
   .revelado { font-weight: bold; background-color: #33334d !important; }
 
@@ -109,6 +116,13 @@
   }
 
   #screen-config select { padding: 10px 15px; border-radius: 8px; border: none; font-weight: bold; }
+
+  footer {
+    text-align: center;
+    padding: 10px;
+    font-size: 14px;
+    color: #888;
+  }
 </style>
 </head>
 <body class="tema-oscuro">
@@ -153,6 +167,7 @@
   <button class="boton" onclick="resetear()">Reiniciar</button>
 </div>
 
+
 <script>
 const palabras = {
   frutas:["manzana","banana","pera","naranja","uva","sandia","melon","kiwi","durazno","cereza","pomelo","limon","mandarina","frutilla","anona","mango","papaya","higo","grosella","arandano"],
@@ -178,7 +193,7 @@ function cambiarTema(){
 function goToPlayers(){
   numImpostores = parseInt(document.getElementById("numImpostores").value);
   const keys = Object.keys(palabras);
-  categoriaSeleccionada = keys[Math.floor(Math.random()*keys.length)]; // aleatoria, no mostrar
+  categoriaSeleccionada = keys[Math.floor(Math.random()*keys.length)];
   document.getElementById("screen-config").classList.remove("active");
   document.getElementById("screen-jugadores").classList.add("active");
 }
@@ -234,6 +249,7 @@ function mostrarRevelar(){
     div.textContent = n;
     div.className = "jugador";
     div.onclick = ()=>toggleRevelar(n,div);
+    div.dataset.mostrado = "false";
     lista.appendChild(div);
   });
 }
@@ -262,5 +278,7 @@ function resetear(){
   document.getElementById("lista-revelar").innerHTML = "";
 }
 </script>
+
+<footer>Hecho con 🤍</footer>
 </body>
 </html>
