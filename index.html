@@ -1,136 +1,182 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Juego del Impostor — App</title>
-
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Juego del Impostor — Responsive</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700;800&display=swap" rel="stylesheet">
-
-<!-- Manifest dinámico para PWA -->
-<link rel="manifest" id="pwamanifest">
-
 <style>
-  *{box-sizing:border-box}
+  /* ===== Reset & base ===== */
+  *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%}
   body{
-    margin:0;
     font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;
-    display:flex;
-    justify-content:center;
-    align-items:flex-start;
-    padding:20px;
     background: linear-gradient(180deg,#f7fbff,#eef7ff);
     color:#0b2545;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    display:flex;
+    justify-content:center;
+    padding:18px;
   }
 
+  /* ===== App wrapper ===== */
   .app {
     width:100%;
-    max-width:1024px;
-    border-radius:14px;
-    overflow:hidden;
-    box-shadow: 0 18px 60px rgba(12,36,80,0.08);
-    display:grid;
-    grid-template-columns: 1fr 420px;
-    gap:18px;
-    background: linear-gradient(180deg,#ffffff,#f4fbff);
-    min-height:640px;
-  }
-  @media (max-width:980px){ .app{ grid-template-columns:1fr; max-width:780px } }
-
-  .splash {
-    grid-column:1/-1;
+    max-width:980px;
     display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:12px;
-    padding:18px 20px;
-    background: linear-gradient(90deg,#fff,#f0f9ff);
-    border-bottom: 1px solid rgba(10,30,60,0.03);
+    flex-direction:column;
+    gap:14px;
+    border-radius:14px;
+    background: linear-gradient(180deg,#ffffff,#f4fbff);
+    box-shadow: 0 20px 60px rgba(12,36,80,0.08);
+    overflow:hidden;
   }
-  .logo { display:flex; align-items:center; gap:12px }
-  .logo svg{ width:54px; height:54px }
-  .title{ font-weight:800; font-size:20px; color:#032b51 }
-  .subtitle{ font-size:13px; color:#17506e; opacity:0.9 }
 
-  .left { padding:20px; display:flex; flex-direction:column; gap:14px }
+  /* header */
+  .header {
+    display:flex;
+    gap:12px;
+    align-items:center;
+    justify-content:space-between;
+    padding:16px;
+    border-bottom:1px solid rgba(10,30,60,0.04);
+  }
+  .logo { display:flex; gap:12px; align-items:center }
+  .logo svg{ width:48px; height:48px }
+  .title { font-weight:800; font-size:18px }
+  .subtitle { font-size:12px; color:#3b5f72; opacity:0.9 }
 
+  /* main content: stack on mobile */
+  .main {
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    padding:16px;
+  }
+
+  /* Card */
   .card{
     background: linear-gradient(180deg,#ffffff,#f7fbff);
     border-radius:12px;
-    padding:14px;
+    padding:12px;
     box-shadow: 0 8px 28px rgba(8,30,60,0.04);
-    border: 1px solid rgba(10,40,80,0.03);
+    border:1px solid rgba(10,40,80,0.03);
   }
 
   label{ display:block; font-size:13px; margin-bottom:8px; color:#09304a; font-weight:600 }
-  select,input,textarea{
-    width:100%; padding:12px 14px; border-radius:10px;
-    border:1px solid rgba(15,50,90,0.06); background:#fff; color:#05273f; font-size:14px
+
+  select,input,textarea,button{
+    width:100%;
+    border-radius:10px;
+    font-size:14px;
+    outline:none;
   }
-  textarea{ min-height:96px; resize:vertical }
+
+  select,input,textarea {
+    padding:12px;
+    border:1px solid rgba(15,50,90,0.06);
+    background:#fff;
+    color:#05273f;
+  }
+  textarea{ min-height:110px; resize:vertical; padding:12px }
+
+  .row { display:flex; gap:8px; align-items:center }
+  .row .col { flex:1 }
 
   .btn {
-    padding:12px 14px; border-radius:10px; border:none; cursor:pointer; font-weight:700;
-    color:#05273f; background: linear-gradient(90deg,#a1d8ff,#86f0ff);
-    box-shadow: 0 8px 18px rgba(30,140,200,0.07); transition:transform .12s;
+    padding:12px 14px;
+    border-radius:10px;
+    border:none;
+    cursor:pointer;
+    font-weight:700;
+    color:#05273f;
+    background: linear-gradient(90deg,#a1d8ff,#86f0ff);
+    transition: transform .12s ease;
   }
-  .btn:hover{ transform:translateY(-2px) }
-  .btn.secondary { background:transparent; border:1px solid rgba(5,40,70,0.06); color:#05273f }
+  .btn:hover{ transform: translateY(-2px); }
+  .btn.secondary{ background:transparent; border:1px solid rgba(5,40,70,0.06); color:#05273f }
 
+  /* players grid */
   .players-list{ display:flex; flex-direction:column; gap:8px; margin-top:8px }
   .player-item{
-    padding:10px 12px; border-radius:10px;
-    display:flex; justify-content:space-between; align-items:center;
+    padding:10px 12px;
+    border-radius:10px;
     background:linear-gradient(180deg,#f8fdff,#eef9ff);
-    border:1px solid rgba(13,70,110,0.03)
+    border:1px solid rgba(13,70,110,0.03);
+    display:flex; justify-content:space-between; align-items:center;
   }
 
-  .reveal-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px }
-
-  .reveal-card{
-    padding:12px; border-radius:10px;
-    background:linear-gradient(180deg,#fff,#eef8ff);
-    border:1px solid rgba(6,40,80,0.04);
-    text-align:center; cursor:pointer; transition:transform .12s
+  /* categories list (responsive) */
+  .categories {
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap:8px;
   }
-  .reveal-card:hover{ transform:translateY(-4px) }
+  @media (max-width:720px){
+    .categories{ grid-template-columns: repeat(1, 1fr); }
+  }
 
+  .cat-button{
+    padding:12px;
+    border-radius:10px;
+    background:linear-gradient(180deg,#fff,#f3fbff);
+    border:1px solid rgba(10,70,110,0.04);
+    cursor:pointer;
+    text-align:left;
+  }
+
+  .preview {
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:10px;
+  }
+  .preview span{
+    padding:6px 10px;border-radius:8px;background:linear-gradient(90deg,#ecf9ff,#f8fbff); font-size:13px;
+  }
+
+  /* modal (centered) */
   .modal{
     position:fixed; left:50%; top:50%; transform:translate(-50%,-50%) scale(.98);
-    z-index:9999; min-width:260px; max-width:92%; padding:18px;
-    border-radius:14px; text-align:center;
-    background: linear-gradient(180deg,#fff,#f2fbff);
-    box-shadow: 0 40px 120px rgba(4,18,40,0.38);
-    border:1px solid rgba(10,40,80,0.06);
-    opacity:0; pointer-events:none; transition:opacity .18s, transform .18s;
+    z-index:9999; min-width:260px; max-width:92%; padding:18px; border-radius:14px; text-align:center;
+    background: linear-gradient(180deg,#fff,#f8fbff); box-shadow: 0 30px 90px rgba(0,0,0,0.25);
+    border:1px solid rgba(10,40,80,0.06); opacity:0; pointer-events:none; transition:opacity .15s, transform .15s;
   }
   .modal.show{ opacity:1; pointer-events:auto; transform:translate(-50%,-50%) scale(1) }
-
-  .role{ font-weight:900; font-size:20px; padding:14px; border-radius:10px; display:inline-block; margin:8px 0 }
+  .role{ font-weight:800; padding:12px 14px; border-radius:10px; display:inline-block; margin:10px 0 }
   .role.impostor{ background: linear-gradient(90deg,#ff6b6b,#ff9a9a); color:white }
   .role.word{ background: linear-gradient(90deg,#ffe08a,#ffb25c); color:#082028 }
 
-  .footer{ padding:10px; text-align:center; font-size:13px; color:#315b79; opacity:0.9 }
+  /* footer */
+  .footer{ text-align:center; padding:12px; font-size:13px; color:#315b79 }
 
+  /* mobile adjustments */
+  @media (max-width:520px){
+    .header{ padding:12px }
+    .logo svg{ width:44px; height:44px }
+    .title{ font-size:16px }
+    .main{ padding:12px }
+    .card{ padding:10px }
+    .btn{ padding:10px }
+  }
 </style>
 </head>
-
 <body>
-<div class="app">
 
-  <!-- HEADER -->
-  <div class="splash">
-    <div class="logo">
-      <svg viewBox="0 0 120 120">
+<div class="app" id="app">
+
+  <!-- header -->
+  <div class="header">
+    <div class="logo" aria-hidden="true">
+      <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="IM">
         <defs>
           <linearGradient id="g1" x1="0" x2="1" y1="0" y2="1">
             <stop offset="0" stop-color="#7bd3ff"/>
             <stop offset="1" stop-color="#9df7c4"/>
           </linearGradient>
         </defs>
-        <rect x="6" y="6" width="108" height="108" rx="20" fill="url(#g1)" />
+        <rect x="6" y="6" width="108" height="108" rx="20" fill="url(#g1)"/>
         <text x="18" y="74" font-family="Poppins" font-weight="800" font-size="46" fill="#05273f">IM</text>
       </svg>
       <div>
@@ -139,298 +185,304 @@
       </div>
     </div>
 
-    <div style="display:flex;gap:10px;align-items:center">
-      <div class="muted">Tema</div>
-      <select id="themeSelect">
-        <option value="auto">Automático</option>
+    <div style="display:flex;gap:8px;align-items:center">
+      <div style="font-size:13px;color:#527a93">Tema</div>
+      <select id="themeSelect" aria-label="Tema">
+        <option value="auto">Auto</option>
         <option value="light">Claro</option>
         <option value="dark">Oscuro</option>
-        <option value="colorful">Colorido</option>
+        <option value="color">Colorido</option>
       </select>
     </div>
   </div>
 
-  <!-- LEFT PANEL -->
-  <div class="left">
+  <!-- main content -->
+  <div class="main">
 
-    <div class="card">
-      <label>Categoría</label>
-      <select id="categorySelect"></select>
+    <!-- select / controls -->
+    <div class="card" id="cardSelect">
+      <label for="categorySelect">Categoría</label>
+      <select id="categorySelect" aria-label="Categoria"></select>
 
-      <div style="display:flex;gap:10px;margin-top:10px">
-        <button id="useCategoryBtn" class="btn">Usar categoría</button>
-        <button id="randomBtn" class="btn secondary">Aleatorio 🎲</button>
+      <div class="row" style="margin-top:10px">
+        <button id="btnUseCategory" class="btn">Usar categoría</button>
+        <button id="btnRandom" class="btn secondary">Aleatorio 🎲</button>
       </div>
 
-      <div style="display:flex;gap:10px;align-items:center;margin-top:12px">
-        <label style="margin:0;min-width:120px">Timer (seg)</label>
-        <input type="number" id="timerInput" min="0" value="6" style="width:110px" />
-        <div class="muted" style="flex:1;text-align:right">0 = sin timer</div>
+      <div class="row" style="margin-top:10px;align-items:center">
+        <label style="min-width:120px">Timer (seg)</label>
+        <input id="timerInput" type="number" min="0" value="6" style="width:110px"/>
+        <div style="flex:1;text-align:right;color:#557286;font-size:13px">0 = sin timer</div>
       </div>
     </div>
 
-    <div class="card">
-      <label>Jugadores</label>
+    <!-- players -->
+    <div class="card" id="cardPlayers">
+      <label for="playersTextarea">Jugadores (uno por línea)</label>
       <textarea id="playersTextarea" placeholder="Ej: María&#10;Juan&#10;Paula"></textarea>
 
-      <div style="display:flex;gap:10px;align-items:center;margin-top:10px">
-        <label style="margin:0;min-width:140px">Cant. impostores</label>
+      <div class="row" style="margin-top:10px;align-items:center">
+        <label style="min-width:140px">Cant. impostores</label>
         <select id="impostorSelect" style="width:120px">
-          <option value="1">1 impostor</option>
-          <option value="2">2 impostores</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
         </select>
       </div>
 
-      <div style="display:flex;gap:10px;margin-top:12px">
-        <button id="assignBtn" class="btn">Asignar roles</button>
-        <button id="resetBtn" class="btn secondary">Reiniciar</button>
+      <div class="row" style="margin-top:12px">
+        <button id="btnAssign" class="btn">Asignar roles</button>
+        <button id="btnReset" class="btn secondary">Reiniciar</button>
       </div>
     </div>
 
+    <!-- players list -->
     <div class="card">
       <label>Jugadores</label>
       <div id="playersContainer" class="players-list">Sin asignar</div>
 
-      <div style="display:flex;gap:10px;margin-top:10px">
-        <button id="newRoundBtn" class="btn secondary">Volver a jugar</button>
-        <button id="endBtn" class="btn secondary">Finalizar</button>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button id="btnNewRound" class="btn secondary">Volver a jugar</button>
+        <button id="btnEnd" class="btn secondary">Finalizar</button>
       </div>
     </div>
 
-  </div>
-
-  <!-- RIGHT PANEL -->
-  <aside style="padding:20px;display:flex;flex-direction:column;gap:16px">
+    <!-- categories + preview -->
     <div class="card">
       <label>Buscar categorías</label>
-      <input id="searchCat" placeholder="Ej: comidas, fútbol..." />
-      <div style="margin-top:8px; max-height:420px; overflow:auto;">
-        <div id="categoriesList" style="display:grid; gap:8px"></div>
+      <input id="searchCat" placeholder="Buscar... (ej: comidas, animales)" />
+      <div style="margin-top:10px">
+        <div id="categoriesGrid" class="categories"></div>
       </div>
-    </div>
 
-    <div class="card" id="previewCard" style="display:none">
-      <label>Preview</label>
-      <div id="previewWords" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px"></div>
-    </div>
-  </aside>
-
-  <!-- MODAL -->
-  <div id="modal" class="modal">
-    <div>
-      <div id="modalName" style="font-weight:800;font-size:18px"></div>
-      <div id="modalRole" class="role word"></div>
-      <div style="display:flex;gap:10px;justify-content:center">
-        <button id="modalHide" class="btn secondary">Ocultar</button>
-        <button id="modalNext" class="btn">Siguiente</button>
+      <div id="previewCard" style="display:none;margin-top:12px">
+        <label>Preview — palabras</label>
+        <div id="previewWords" class="preview"></div>
       </div>
     </div>
   </div>
 
 </div>
 
+<!-- modal -->
+<div id="modal" class="modal" aria-hidden="true">
+  <div id="modalName" style="font-weight:800;font-size:18px;color:#062a44"></div>
+  <div id="modalRole" class="role word"></div>
+  <div style="display:flex;gap:8px;justify-content:center;margin-top:10px">
+    <button id="modalHide" class="btn secondary">Ocultar</button>
+    <button id="modalNext" class="btn">Siguiente</button>
+  </div>
+</div>
+
 <div class="footer">Hecho con 🤍</div>
 
-<!-- ========================= -->
-    <!-- ======== STYLES ========= -->
-    <!-- ========================= -->
-    <style>
-        :root {
-            --bg: #f8fafc;
-            --card: #ffffff;
-            --primary: #4f46e5;
-            --primary-light: #818cf8;
-            --accent: #10b981;
-            --accent-light: #6ee7b7;
-            --text: #1e293b;
-            --soft: #e2e8f0;
-        }
+<script>
+/* ============================
+   Datos: categorías (ejemplo reducido)
+   (si querés agrego las 20×20 completas)
+   ============================ */
+const CATEGORIES = {
+  "Comidas Argentinas":["Asado","Empanada","Milanesa","Fugazzeta","Pizza al molde","Locro","Humita","Tortilla","Choripán","Bondiola","Ñoquis","Canelones","Matambre","Provoleta","Ensalada rusa","Guiso","Ravioles","Sorrentinos","Tarta de jamón","Pastel de papas"],
+  "Lugares":["Bariloche","Mar del Plata","Mendoza","Córdoba","Salta","Jujuy","Iguazú","Ushuaia","La Plata","Rosario","Neuquén","San Juan","San Luis","Tucumán","Corrientes","Posadas","Puerto Madryn","Trelew","Paraná","Bahía Blanca"],
+  "Animales":["Perro","Gato","Caballo","Vaca","Oveja","Gallina","Conejo","Tortuga","Loro","Delfín","Tiburón","Mono","León","Tigre","Zorro","Lobo","Hurón","Puma","Pingüino","Cebra"],
+  "Objetos":["Celular","Llave","Mesa","Silla","Control remoto","Televisor","Cargador","Auriculares","Computadora","Bolso","Mochila","Reloj","Camara","Plato","Vaso","Taza","Cuchillo","Cuchara","Cucharon","Botella"]
+};
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Poppins", sans-serif;
-        }
+/* = state = */
+let state = {
+  category: Object.keys(CATEGORIES)[0],
+  word: null,
+  players: [], // {name, role, seen}
+  timer: 6,
+  roundActive: false
+};
 
-        body {
-            background: var(--bg);
-            color: var(--text);
-            display: flex;
-            justify-content: center;
-            padding: 20px;
-        }
+/* DOM refs */
+const categorySelect = document.getElementById('categorySelect');
+const btnUseCategory = document.getElementById('btnUseCategory');
+const btnRandom = document.getElementById('btnRandom');
+const timerInput = document.getElementById('timerInput');
 
-        .container {
-            width: 100%;
-            max-width: 500px;
-            background: var(--card);
-            padding: 25px;
-            border-radius: 18px;
-            box-shadow: 0 4px 18px rgba(0,0,0,0.10);
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
+const playersTextarea = document.getElementById('playersTextarea');
+const impostorSelect = document.getElementById('impostorSelect');
+const btnAssign = document.getElementById('btnAssign');
+const btnReset = document.getElementById('btnReset');
 
-        h1 {
-            text-align: center;
-            font-size: 1.9em;
-            font-weight: 600;
-            color: var(--primary);
-        }
+const playersContainer = document.getElementById('playersContainer');
+const btnNewRound = document.getElementById('btnNewRound');
+const btnEnd = document.getElementById('btnEnd');
 
-        select, button, input {
-            width: 100%;
-            padding: 14px;
-            border-radius: 14px;
-            border: 2px solid var(--soft);
-            font-size: 1em;
-            outline: none;
-        }
+const categoriesGrid = document.getElementById('categoriesGrid');
+const searchCat = document.getElementById('searchCat');
+const previewCard = document.getElementById('previewCard');
+const previewWords = document.getElementById('previewWords');
 
-        select:focus, input:focus {
-            border-color: var(--primary-light);
-        }
+const modal = document.getElementById('modal');
+const modalName = document.getElementById('modalName');
+const modalRole = document.getElementById('modalRole');
+const modalHide = document.getElementById('modalHide');
+const modalNext = document.getElementById('modalNext');
 
-        button {
-            background: var(--primary);
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            transition: 0.25s;
-        }
+const themeSelect = document.getElementById('themeSelect');
 
-        button:hover {
-            background: var(--primary-light);
-        }
+/* init */
+function init(){
+  // fill select
+  Object.keys(CATEGORIES).forEach(cat=>{
+    const o = document.createElement('option');
+    o.value = cat; o.textContent = cat;
+    categorySelect.appendChild(o);
+  });
+  categorySelect.value = state.category;
+  renderCategories();
+  updatePreview();
+  applyTheme('auto');
+}
+init();
 
-        .secondary-btn {
-            background: var(--accent);
-        }
+/* render categories grid */
+function renderCategories(filter=''){
+  categoriesGrid.innerHTML = '';
+  Object.keys(CATEGORIES).filter(k=>k.toLowerCase().includes(filter.toLowerCase())).forEach(cat=>{
+    const btn = document.createElement('div');
+    btn.className = 'cat-button';
+    btn.innerHTML = `<strong>${cat}</strong><div style="font-size:12px;color:#557286;margin-top:6px">${CATEGORIES[cat].length} palabras</div>`;
+    btn.onclick = ()=> {
+      categorySelect.value = cat;
+      state.category = cat;
+      updatePreview();
+      window.scrollTo({top:0,behavior:'smooth'});
+    };
+    categoriesGrid.appendChild(btn);
+  });
+}
+searchCat.addEventListener('input', e=> renderCategories(e.target.value));
 
-        .secondary-btn:hover {
-            background: var(--accent-light);
-        }
+function updatePreview(){
+  const cat = categorySelect.value || Object.keys(CATEGORIES)[0];
+  state.category = cat;
+  previewCard.style.display = 'block';
+  previewWords.innerHTML = '';
+  (CATEGORIES[cat]||[]).slice(0,20).forEach(w=>{
+    const el = document.createElement('span'); el.textContent = w;
+    previewWords.appendChild(el);
+  });
+}
+categorySelect.addEventListener('change', updatePreview);
 
-        .word-box {
-            margin-top: 10px;
-            background: var(--soft);
-            padding: 15px;
-            border-radius: 12px;
-            font-weight: bold;
-            text-align: center;
-            font-size: 1.3em;
-            color: var(--text);
-            min-height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+/* theme */
+themeSelect.addEventListener('change', ()=> applyTheme(themeSelect.value));
+function applyTheme(mode){
+  if(mode==='dark') document.body.style.background='linear-gradient(180deg,#071028,#001220)';
+  else if(mode==='light') document.body.style.background='linear-gradient(180deg,#f7fbff,#eef7ff)';
+  else if(mode==='color') document.body.style.background='linear-gradient(180deg,#fff7fb,#f7fff4)';
+  else {
+    // auto
+    if(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) document.body.style.background='linear-gradient(180deg,#071028,#001220)';
+    else document.body.style.background='linear-gradient(180deg,#f7fbff,#eef7ff)';
+  }
+}
 
-        .footer {
-            text-align: center;
-            margin-top: 12px;
-            font-size: .9em;
-            color: #64748b;
-        }
+/* start / random */
+btnUseCategory.addEventListener('click', ()=>{
+  state.category = categorySelect.value;
+  state.word = randomFrom(CATEGORIES[state.category]);
+  playersTextarea.focus();
+});
+btnRandom.addEventListener('click', ()=>{
+  const cats = Object.keys(CATEGORIES);
+  const c = cats[Math.floor(Math.random()*cats.length)];
+  state.category = c; categorySelect.value = c; state.word = randomFrom(CATEGORIES[c]); updatePreview(); playersTextarea.focus();
+});
 
-        @media (max-width: 420px) {
-            h1 { font-size: 1.6em; }
-            .container { padding: 18px; }
-            button, select, input {
-                padding: 12px;
-                font-size: .95em;
-            }
-        }
-    </style>
+/* assign roles */
+btnAssign.addEventListener('click', ()=>{
+  const raw = playersTextarea.value.trim();
+  if(!raw) return alert('Agregá al menos 3 jugadores, uno por línea.');
+  const lines = raw.split(/\n+/).map(l=>l.trim()).filter(Boolean);
+  if(lines.length < 3) return alert('Se necesitan al menos 3 jugadores.');
 
-<!-- ========================= -->
-    <!-- ========= SCRIPT ========= -->
-    <!-- ========================= -->
+  const impostors = parseInt(impostorSelect.value) || 1;
+  if(impostors >= lines.length) return alert('Los impostores deben ser menos que los jugadores.');
 
-    <script>
-        // ============================
-        //   CATEGORÍAS Y PALABRAS
-        // ============================
-        const categorias = {
-            "Comidas": [
-                "Asado", "Empanadas", "Milanesa", "Fideos", "Pizza", "Locro", "Humita",
-                "Choripán", "Tarta", "Ravioles", "Tortilla", "Guiso", "Hamburguesa",
-                "Ñoquis", "Pollo al horno", "Lomito", "Matambre", "Carbonara",
-                "Pancho", "Ensalada"
-            ],
-            "Lugares de Argentina": [
-                "Buenos Aires", "Córdoba", "Mendoza", "Salta", "Jujuy", "Bariloche",
-                "Rosario", "Tucumán", "La Plata", "Misiones", "Ushuaia", "Neuquén",
-                "Chubut", "San Juan", "San Luis", "Formosa", "Chaco", "Corrientes",
-                "Entre Ríos", "Bahía Blanca"
-            ],
-            "Animales": [
-                "Perro", "Gato", "Caballo", "Vaca", "Pato", "Zorro", "Loro",
-                "Delfín", "Ballena", "Tiburón", "Oso", "Mono", "León", "Tigre",
-                "Águila", "Serpiente", "Sapo", "Ratón", "Carpincho", "Pingüino"
-            ],
-            "Objetos": [
-                "Mesa", "Silla", "Celular", "Llave", "Cuchillo", "Cámara", "Auriculares",
-                "Reloj", "Auto", "Moto", "Lampara", "Termo", "Mate", "Botella",
-                "Computadora", "Cuaderno", "Lapicera", "Control remoto", "Cable", "Ventilador"
-            ],
-            "Famosos": [
-                "Messi", "Maradona", "Tinelli", "Susana Giménez", "Duki", "Nicki Nicole",
-                "Tini", "Sabrina Carpenter", "Moria Casán", "Boca Juniors", "River Plate",
-                "Abel Pintos", "Luciano Pereyra", "Karina La Princesita", "Lali",
-                "Soledad Pastorutti", "Wos", "Paulo Londra", "Bizarrap", "Jorge Lanata"
-            ]
-        };
+  const t = parseInt(timerInput.value); state.timer = (isNaN(t)||t<0)?0:t;
 
-        // ============================
-        //   ELEMENTOS DEL DOM
-        // ============================
-        const categoriaSelect = document.getElementById("categoria");
-        const randomBtn = document.getElementById("btn-random");
-        const generateBtn = document.getElementById("btn-generar");
-        const wordBox = document.getElementById("word-box");
+  if(!state.word) state.word = randomFrom(CATEGORIES[state.category]);
 
-        // Cargar categorías en el select
-        for (let c in categorias) {
-            let opt = document.createElement("option");
-            opt.value = c;
-            opt.textContent = c;
-            categoriaSelect.appendChild(opt);
-        }
+  // pick impostors indices
+  const idx = [...Array(lines.length).keys()].sort(()=>Math.random()-0.5);
+  const impIdx = idx.slice(0, impostors);
 
-        // Función para obtener palabra de categoría elegida
-        function palabraDeCategoria(cat) {
-            let lista = categorias[cat];
-            return lista[Math.floor(Math.random() * lista.length)];
-        }
+  state.players = lines.map((name,i)=>({ name, role: impIdx.includes(i) ? 'IMPOSTOR' : state.word, seen:false }));
+  state.roundActive = true;
+  renderPlayers();
+});
 
-        // BOTÓN: ALEATORIO
-        randomBtn.addEventListener("click", () => {
-            let todasLasCategorias = Object.keys(categorias);
-            let catRandom = todasLasCategorias[Math.floor(Math.random() * todasLasCategorias.length)];
-            let palabra = palabraDeCategoria(catRandom);
+/* render players */
+function renderPlayers(){
+  playersContainer.innerHTML = '';
+  if(!state.players.length) { playersContainer.textContent = 'No hay jugadores'; return; }
+  const grid = document.createElement('div'); grid.className='reveal-grid';
+  state.players.forEach((p,i)=>{
+    const card = document.createElement('div'); card.className='reveal-card';
+    card.innerHTML = `<div style="font-weight:700">${escapeHtml(p.name)}</div><div style="font-size:12px;color:#557286;margin-top:6px">${p.seen?'VISTO':'SIN VER'}</div>`;
+    card.onclick = ()=> openModal(i);
+    grid.appendChild(card);
+  });
+  playersContainer.appendChild(grid);
+}
 
-            wordBox.innerHTML = palabra;
-        });
+/* modal */
+let modalTimer = null;
+function openModal(i){
+  if(!state.roundActive) return;
+  const p = state.players[i];
+  modalName.textContent = p.name;
+  if(p.role === 'IMPOSTOR'){ modalRole.textContent = 'SOS EL IMPOSTOR'; modalRole.className='role impostor'; playImpostor(); }
+  else { modalRole.textContent = p.role; modalRole.className='role word'; playReveal(); }
+  modal.classList.add('show'); modal.setAttribute('aria-hidden','false');
+  state.players[i].seen = true; renderPlayers();
 
-        // BOTÓN: GENERAR SEGÚN SELECT
-        generateBtn.addEventListener("click", () => {
-            let cat = categoriaSelect.value;
-            let palabra = palabraDeCategoria(cat);
+  clearTimeout(modalTimer);
+  if(state.timer > 0) modalTimer = setTimeout(()=> { closeModal(); nextUnseen(); }, state.timer*1000);
+}
+function closeModal(){ modal.classList.remove('show'); modal.setAttribute('aria-hidden','true'); clearTimeout(modalTimer); playClick(); }
+modalNext.addEventListener('click', ()=> { closeModal(); nextUnseen(); });
+modalHide.addEventListener('click', ()=> closeModal());
 
-            // Animación suave
-            wordBox.style.opacity = 0;
-            setTimeout(() => {
-                wordBox.innerHTML = palabra;
-                wordBox.style.opacity = 1;
-            }, 200);
-        });
-    </script>
+function nextUnseen(){
+  const idx = state.players.findIndex(p=>!p.seen);
+  if(idx === -1){ finishRound(); return; }
+  setTimeout(()=> openModal(idx), 300);
+}
 
-    <div class="footer">Hecho con 🤍</div>
+function finishRound(){ alert('Ronda finalizada.'); state.roundActive=false; }
 
+/* controls: new round / reset / end */
+btnNewRound.addEventListener('click', ()=> {
+  if(!confirm('Iniciar nueva ronda? Se borrarán los jugadores actuales.')) return;
+  state.players=[]; state.word=null; state.roundActive=false; playersTextarea.value=''; playersContainer.innerHTML='Sin asignar'; closeModal();
+});
+btnReset.addEventListener('click', ()=> {
+  if(!confirm('Reiniciar todo?')) return;
+  state = { category:Object.keys(CATEGORIES)[0], word:null, players:[], timer:6, roundActive:false };
+  playersTextarea.value=''; playersContainer.innerHTML='Sin asignar'; categorySelect.selectedIndex=0; updatePreview(); closeModal();
+});
+btnEnd.addEventListener('click', ()=> { if(confirm('Finalizar partida?')) btnReset.click(); });
+
+/* utils */
+function randomFrom(a){ return a[Math.floor(Math.random()*a.length)]; }
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])); }
+
+/* simple sounds with WebAudio */
+const audioCtx = window.AudioContext ? new AudioContext() : null;
+function playTone(f,d=0.12,t='sine',v=0.06){ if(!audioCtx) return; const o=audioCtx.createOscillator(), g=audioCtx.createGain(); o.type=t; o.frequency.value=f; g.gain.value=v; o.connect(g); g.connect(audioCtx.destination); o.start(); setTimeout(()=>o.stop(), d*1000); }
+function playClick(){ playTone(880,0.08,'sine',0.05); }
+function playReveal(){ playTone(660,0.18,'triangle',0.08); }
+function playImpostor(){ playTone(130,0.28,'sawtooth',0.11); }
+
+/* init small keyboard helpers */
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); if(e.key.toLowerCase()==='r' && (e.ctrlKey||e.metaKey)){ e.preventDefault(); btnRandom.click(); } });
+
+</script>
 </body>
 </html>
