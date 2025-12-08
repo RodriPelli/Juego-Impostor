@@ -320,78 +320,65 @@ body.theme-colorful .revealBox{
 
 
 </head>
-
 <body>
-
-    <div class="container" id="mainScreen">
-
-        <h1 class="title">🎭 Juego del Impostor</h1>
-<div class="theme-box">
-  <label for="themeSelect"><b>Tema:</b></label>
-  <select id="themeSelect">
-    <option value="light">Claro</option>
-    <option value="dark">Oscuro</option>
-    <option value="colorful">Colorido</option>
-  </select>
-</div>
-        <div class="card fade">
-            <label class="label">Selecciona una categoría:</label>
-
-            <select id="categorySelect" class="input"></select>
-
-            <button class="btn color" id="randomBtn">Aleatorio 🎲</button>
-
-            <button class="btn" id="nextToPlayers">Continuar ➜</button>
-        </div>
+    <div class="theme-toggle">
+        <label for="themeSelect">Tema:</label>
+        <select id="themeSelect" onchange="changeTheme()">
+            <option value="dark">Negro</option>
+            <option value="light">Blanco</option>
+            <option value="colorful">Colorido</option>
+        </select>
     </div>
 
+    <h1>Juego del Impostor</h1>
 
-    <!-- ======================================= -->
-    <!--        PANTALLA INGRESAR JUGADORES       -->
-    <!-- ======================================= -->
-
-    <div class="container hidden fade" id="playerScreen">
-        <h2 class="subtitle">Ingresá los jugadores</h2>
-
-        <div id="playerInputs"></div>
-
-        <button class="btn small" id="addPlayer">Agregar jugador ➕</button>
-
-        <button class="btn" id="assignRoles">Asignar roles y palabra</button>
-        <button class="btn back" id="backToMain">⬅ Volver</button>
+    <div class="player-select">
+        <h2>Seleccionen su nombre</h2>
+        <button onclick="selectPlayer('Jugador 1')">Jugador 1</button>
+        <button onclick="selectPlayer('Jugador 2')">Jugador 2</button>
     </div>
 
+    <div class="setup">
+        <h2>Elegir categoría</h2>
+        <select id="categorySelect">
+            <!-- 20 categorías -->
+            <option>Animales</option>
+            <option>Comidas</option>
+            <option>Países</option>
+            <option>Profesiones</option>
+            <option>Colores</option>
+            <option>Películas</option>
+            <option>Objetos</option>
+            <option>Series</option>
+            <option>Juegos</option>
+            <option>Ropa</option>
+            <option>Ciudades</option>
+            <option>Instrumentos</option>
+            <option>Marcas</option>
+            <option>Autos</option>
+            <option>Música</option>
+            <option>Plantas</option>
+            <option>Bebidas</option>
+            <option>App</option>
+            <option>Superhéroes</option>
+            <option>Idiomas</option>
+        </select>
 
-    <!-- ======================================= -->
-    <!--      LISTA DE JUGADORES PARA MIRAR      -->
-    <!-- ======================================= -->
+        <h2>Elegir palabra (20 opciones por categoría)</h2>
+        <select id="wordSelect"></select>
 
-    <div class="container hidden fade" id="revealListScreen">
-        <h2 class="subtitle">Toca tu nombre</h2>
-
-        <div id="playerButtons"></div>
-
-        <button class="btn back" id="resetGame">Reiniciar juego</button>
+        <button onclick="startGame()">Iniciar juego</button>
     </div>
 
-
-    <!-- ======================================= -->
-    <!--  PANTALLA DE PALABRA / IMPOSITOR SECRETO -->
-    <!-- ======================================= -->
-
-    <div class="container hidden fade" id="revealScreen">
-        <div id="revealText" class="revealBox"></div>
-
-        <button class="btn" id="backToList">✔ Listo</button>
+    <div class="game" id="gameArea" style="display:none;">
+        <h2 id="turnInfo"></h2>
+        <button onclick="reveal()">Tocar para ver tu palabra</button>
+        <p id="revealText"></p>
+        <button onclick="endGame()">Terminar Ronda</button>
     </div>
 
-
-    <!-- ======================================= -->
-    <!--                   FOOTER                 -->
-    <!-- ======================================= -->
-
-    <footer class="footer">
-        Hecho con 🤍
+    <footer>
+        <p>Hecho con 🤍</p>
     </footer>
 
     <script>
