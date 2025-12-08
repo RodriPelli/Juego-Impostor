@@ -8,7 +8,7 @@
   body {
     margin: 0;
     padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Comic Sans MS', cursive, sans-serif;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
@@ -29,14 +29,12 @@
   }
 
   h1 {
-    font-family: 'Comic Sans MS', cursive, sans-serif;
     font-size: 3rem;
-    background: linear-gradient(45deg, #ff4d4d, #4dff4d, #4d4dff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    font-weight: bold;
     text-align: center;
     margin-bottom: 30px;
     text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    transition: color 0.5s;
   }
 
   .screen { display: none; width: 100%; }
@@ -90,10 +88,12 @@
 
   /* Temas */
   body.tema-claro { background: #f5f5f5; color: #000; }
+  body.tema-claro h1 { color: #ff4d4d; }
   body.tema-claro .jugador { background: #ddd; color: #000; }
   body.tema-claro .jugador:hover { background: #ccc; }
 
   body.tema-oscuro { background: #121212; color: #fff; }
+  body.tema-oscuro h1 { color: #ff4d4d; }
   body.tema-oscuro .jugador { background: #1e1e2e; color: #fff; }
   body.tema-oscuro .jugador:hover { background: #2a2a3d; }
 
@@ -103,10 +103,7 @@
     animation: gradientAnim 30s ease infinite;
     color: #fff;
   }
-  body.tema-colorido h1,
-  body.tema-colorido .boton {
-    color: #fff;
-  }
+  body.tema-colorido h1 { color: #fff; }
   body.tema-colorido .jugador { background-color: rgba(255,255,255,0.15); }
 
   @keyframes gradientAnim {
@@ -119,7 +116,7 @@
 
   footer {
     text-align: center;
-    padding: 10px;
+    padding: 20px 0;
     font-size: 14px;
     color: #888;
   }
@@ -160,13 +157,13 @@
   <button class="boton" onclick="resetear()">Volver</button>
 </div>
 
+
 <!-- Pantalla revelar -->
 <div id="screen-revelar" class="screen">
   <h2>Tocá tu nombre para ver/ocultar tu palabra</h2>
   <div class="lista-jugadores" id="lista-revelar"></div>
   <button class="boton" onclick="resetear()">Reiniciar</button>
 </div>
-
 
 <script>
 const palabras = {
