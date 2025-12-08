@@ -6,137 +6,403 @@
 <title>Juego del Impostor</title>
 
 <style>
+/* =====================================
+   SISTEMA DE TEMAS
+===================================== */
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Arial', sans-serif;
+/* Tema claro */
+:root {
+  --bg: #ffffff;
+  --text: #1a1a1a;
+  --card: #f3f3f3;
+  --primary: #4a90e2;
+  --accent: #6ac47e;
 }
+
+/* Tema oscuro */
+.theme-dark {
+  --bg: #0f0f0f;
+  --text: #eaeaea;
+  --card: #1c1c1c;
+  --primary: #8ab4f8;
+  --accent: #4dd0e1;
+}
+
+/* Tema colorido (vivo) */
+.theme-colorful {
+  --bg: #fff3e8;
+  --text: #222;
+  --card: #ffe0b2;
+  --primary: #ff7b72;
+  --accent: #6bcdfd;
+}
+
+/* =====================================
+   BASE
+===================================== */
+* { box-sizing:border-box; }
 
 body {
-    background: linear-gradient(to bottom, #dfefff, #ffffff);
-    padding: 20px;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+  margin: 0;
+  padding: 20px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Poppins", sans-serif;
+  transition: background .3s, color .3s;
+  display: flex;
+  justify-content: center;
 }
 
-/* CONTENEDOR GENERAL */
 .container {
-    flex: 1;
+  width: 100%;
+  max-width: 760px;
+  background: var(--card);
+  padding: 18px;
+  border-radius: 14px;
+  box-shadow: 0 6px 25px rgba(0,0,0,0.12);
 }
 
-/* Títulos */
-h1, h2 {
-    color: #0b2b5c;
-    margin-bottom: 15px;
+/* =====================================
+   TITULOS
+===================================== */
+.title {
+  font-size: 25px;
+  font-weight: 900;
+  text-align: center;
+  margin-bottom: 8px;
 }
 
-/* Selects y botones */
-select, button {
-    width: 100%;
-    padding: 15px;
-    border-radius: 12px;
-    border: none;
-    font-size: 18px;
-    margin-bottom: 20px;
+.subtitle {
+  text-align: center;
+  color: var(--text);
+  opacity: 0.7;
+  margin-bottom: 20px;
 }
 
-button {
-    background: #4ea1ff;
-    color: white;
-    font-weight: bold;
+/* =====================================
+   SELECTS / INPUTS
+===================================== */
+select {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 12px;
+  border: 2px solid var(--primary);
+  background: #fff;
+  margin-bottom: 12px;
 }
 
-button:hover {
-    opacity: 0.9;
+/* =====================================
+   BOTONES
+===================================== */
+.btn {
+  width: 100%;
+  padding: 14px;
+  margin-top: 10px;
+  font-size: 16px;
+  font-weight: 800;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
 }
 
-/* Tarjetas de jugadores */
-.player-button {
-    padding: 18px;
-    background: #4ea1ff;
-    border-radius: 12px;
-    color: white;
-    font-size: 22px;
-    text-align: center;
-    width: 100%;
-    margin-bottom: 15px;
+.btn.secondary {
+  background: var(--accent);
 }
 
-/* FOOTER FIJO AL FINAL */
+.btn:active {
+  transform: scale(0.96);
+}
+
+/* =====================================
+   GRID DE JUGADORES
+===================================== */
+.players-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.player-btn {
+  padding: 14px;
+  border-radius: 14px;
+  background: #fff;
+  border: 2px solid var(--accent);
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+}
+
+/* =====================================
+   MODAL PARA REVELAR
+===================================== */
+.modal {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%) scale(0.9);
+  background: var(--card);
+  padding: 25px;
+  width: 90%;
+  max-width: 380px;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: .15s;
+}
+
+.modal.show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%,-50%) scale(1);
+}
+
+.modal h2 {
+  font-weight: 900;
+  margin-bottom: 10px;
+}
+
+.close-btn {
+  margin-top: 12px;
+  padding: 10px;
+  background: var(--primary);
+  color: white;
+  border-radius: 10px;
+  border: none;
+  font-weight: 800;
+  width: 100%;
+}
+
+/* =====================================
+   FOOTER
+===================================== */
 .footer {
-    text-align: center;
-    font-size: 20px;
-    padding: 20px 0;
-    margin-top: auto;
-    color: #333;
+  text-align: center;
+  width: 100%;
+  margin-top: 35px;
 }
 
-/* TEMAS */
-body.tema-claro {
-    background: #eef7ff;
-    color: #0b2b5c;
+.footer small {
+  opacity: 0.6;
+  font-size: 14px;
 }
 
-body.tema-oscuro {
-    background: #1a1a1a;
-    color: white;
+/* MOBILE FIXES */
+@media (max-width: 480px) {
+  .title { font-size: 22px; }
+  select { font-size: 15px; }
+  .btn { font-size: 14px; padding: 12px; }
+  .player-btn { padding: 12px; }
 }
-
-body.tema-colorido {
-    background: linear-gradient(135deg, #ff8fb1, #8fd3ff, #a8ff8f);
-}
-
-/* CONTENEDOR OPCIONES (NOMBRE / CATEGORÍA / PALABRAS) */
-.section {
-    margin-bottom: 40px;
-}
-
 </style>
-.btn:hover {
-                background-color: #0056b3;
-            }
+</head>
 
-            @media (max-width: 768px) {
-                .flyer {
-                    padding: 20px;
-                }
+<body class="theme-light">
+<div class="container">
 
-                h1 {
-                    font-size: 1.5rem;
-                }
+<h1 class="title">Juego del Impostor</h1>
+<p class="subtitle">Elegí categoría o usá aleatorio, mami 💋</p>
 
-                p, ul li {
-                    font-size: 0.9rem;
-                }
-            }
-        </style>
-    </head>
+<!-- Selector de temas -->
+<select id="themeSelector">
+  <option value="light">Tema Claro</option>
+  <option value="dark">Tema Oscuro</option>
+  <option value="colorful">Tema Colorido</option>
+</select>
 
-    <body>
-        <div class="flyer">
-            <h1>📢 ¡Inscripciones Abiertas!</h1>
+<!-- Categoría -->
+<select id="categorySelect"></select>
 
-            <p>Compañeros y compañeras, a partir del día de hoy se encuentran abiertas las inscripciones para las siguientes carreras del ciclo lectivo 2026:</p>
+<button class="btn" id="randomBtn">ALEATORIO 🔀</button>
+<button class="btn secondary" id="startBtn">INICIAR JUEGO</button>
 
-            <ul>
-                <li>🔹 Tecnicatura en Acompañamiento Terapéutico</li>
-                <li>🔹 Tecnicatura en Administración Contable</li>
-                <li>🔹 Tecnicatura en Seguridad e Higiene</li>
-                <li>🔹 Tecnicatura en Recursos Humanos</li>
-            </ul>
+<!-- Jugadores -->
+<div id="playersArea" class="players-grid" style="display:none;"></div>
 
-            <p>Para más información, envía un WhatsApp al:</p>
+<!-- Modal -->
+<div id="modal" class="modal">
+  <h2 id="revealTitle"></h2>
+  <p id="revealWord" style="font-size:22px;font-weight:900;"></p>
+  <button class="close-btn" onclick="closeModal()">Cerrar</button>
+</div>
 
-            <a class="btn" href="https://wa.me/2216754120" target="_blank">
-                📲 221 675 4120
-            </a>
+<div class="footer">
+  <small>hecho con 🤍</small>
+</div>
 
-            <footer>
-                Secretaría de Capacitación — UDOCBA
-            </footer>
-        </div>
-    </body>
+<script>
+/* =====================================
+   CATEGORÍAS (20 × 20 palabras)
+===================================== */
+
+const categories = {
+  "Comida Argentina": [
+    "Asado","Provoleta","Milanesa","Empanadas","Fainá","Choripán","Bondiola","Locro","Humita","Tortillas","Sánguche de miga","Bizcochitos","Facturas","Alfajor","Dulce de leche","Ñoquis","Matambre","Vitel Toné","Ensalada rusa","Tarta de jamón y queso"
+  ],
+  "Lugares de Argentina": [
+    "Obelisco","Mar del Plata","Córdoba","Bariloche","Salta","Jujuy","Mendoza","Ushuaia","Puerto Madryn","Rosario","Tigre","Neuquén","San Juan","La Plata","Chaco","Formosa","Iguazú","Calafate","San Luis","Río Negro"
+  ],
+  "Series y Pelis": [
+    "Casados con Hijos","Los Simuladores","Okupas","Breaking Bad","Friends","Stranger Things","El Marginal","Pulp Fiction","Toy Story","Harry Potter","Shrek","El Señor de los Anillos","Titanic","Merlina","Dark","Avatar","Naruto","Dragon Ball","One Piece","Vikings"
+  ],
+  "Fútbol": [
+    "Boca","River","Maradona","Messi","Scaloni","Dibu","Bombonera","Monumental","Árbitro","VAR","Penal","Corner","Gol","Offside","Hinchas","Final","Mundial","Pelota","Técnico","Cancha"
+  ],
+  "Animales": [
+    "Perro","Gato","Loro","Tortuga","Elefante","León","Tiburón","Delfín","Caballo","Conejo","Vaca","Mono","Pingüino","Águila","Oso","Zorro","Panda","Serpiente","Jirafa","Camello"
+  ],
+  "Verduras": [
+    "Papa","Zanahoria","Cebolla","Lechuga","Tomate","Zapallo","Berenjena","Ajo","Apio","Repollo","Batata","Rúcula","Pepino","Espinaca","Arvejas","Brócoli","Coliflor","Morrones","Hinojo","Remolacha"
+  ],
+  "Frutas": [
+    "Manzana","Banana","Pera","Naranja","Uva","Durazno","Sandía","Melón","Kiwi","Frutilla","Mango","Papaya","Cereza","Higo","Mandarina","Arándanos","Pomelo","Ciruela","Granada","Lima"
+  ],
+
+  "Instrumentos": [
+    "Guitarra","Batería","Piano","Violín","Bajo","Flauta","Saxo","Trompeta","Acordeón","Bandoneón","Ukelele","Arpa","Organo","Tambor","Bombo","Platillos","Oboe","Clarinete","Sintetizador","Lira"
+  ],
+
+  "Tecnología": [
+    "Celular","Tablet","Notebook","Router","Bluetooth","Wifi","Mouse","Teclado","Monitor","Cargador","USB","Smart TV","Consola","PlayStation","Xbox","Auriculares","Cámara","Pendrive","Micro SD","Drone"
+  ],
+
+  "Superhéroes": [
+    "Batman","Superman","Spiderman","Iron Man","Thor","Hulk","Capitán América","Wonder Woman","Aquaman","Flash","Black Widow","Ant-Man","Loki","Deadpool","Wolverine","Profesor X","Magneto","Hawkeye","Pantera Negra","Doctor Strange"
+  ],
+
+  "Profesiones": [
+    "Médico","Abogado","Docente","Ingeniero","Enfermero","Programador","Chef","Carpintero","Plomero","Electricista","Camionero","Policía","Bombero","Veterinario","Agricultor","Mecánico","Panadero","Actor","Cantante","Arquitecto"
+  ],
+
+  "Cosas de la casa": [
+    "Mesa","Silla","Heladera","Cama","Colchón","Almohada","Ventilador","TV","Microondas","Horno","Tostadora","Lavadora","Secadora","Tacho","Alacena","Estufa","Lámpara","Espejo","Cortinas","Ropero"
+  ],
+
+  "Autos": [
+    "Fiat","Ford","Chevrolet","Volkswagen","Toyota","Peugeot","Renault","Audi","BMW","Mercedes","Tesla","Citroën","Honda","Kia","Hyundai","Suzuki","Jeep","Lancia","Mini","Volvo"
+  ],
+
+  "Música (Géneros)": [
+    "Rock","Pop","Cumbia","RKT","Trap","Reggaetón","Folklore","Tango","Electrónica","Cuarteto","Metal","Jazz","Blues","Rap","Indie","K-Pop","Clásica","Ska","Dance","Lo-Fi"
+  ],
+
+  "Colores": [
+    "Rojo","Azul","Amarillo","Verde","Negro","Blanco","Violeta","Celeste","Naranja","Rosa","Marrón","Gris","Turquesa","Bordo","Fucsia","Beige","Oliva","Lavanda","Carbón","Arena"
+  ],
+
+  "Electrodomésticos": [
+    "Licuadora","Tostadora","Heladera","Microondas","Horno","Cafetera","Aspiradora","Batidora","Ventilador","Aire Acondicionado","Calefactor","Plancha","Parlante","Radio","Freidora","Minipimer","Televisor","Router","Modem","Lavavajillas"
+  ],
+
+  "Juegos": [
+    "Monopoly","UNO","T.E.G","Truco","Pictionary","Ajedrez","Damas","Generala","Jenga","Ludo","Domino","Scrabble","Póker","Ruleta","Cacho","Mazo","Dados","Cartas","Mikado","Bingo"
+  ],
+
+  "Ropa": [
+    "Remera","Pantalón","Short","Campera","Buzo","Zapatillas","Bufanda","Gorro","Camisa","Sweater","Medias","Guantes","Campera de cuero","Ojotas","Pollera","Vestido","Jean","Cinturón","Corbata","Ropa interior"
+  ],
+
+  "Electrónica personal": [
+    "Smartwatch","Auriculares","Powerbank","Cargador","Cable USB","Micro SD","Notebook","Mouse","Teclado","Parlante","Kindle","Monitor","Microfono","Lentes VR","Joystick","Tablet","Dron","Webcam","Proyector","Router"
+  ]
+};
+
+
+/* =====================================
+   CARGAR CATEGORÍAS
+===================================== */
+const categorySelect = document.getElementById("categorySelect");
+
+Object.keys(categories).forEach(cat => {
+  const op = document.createElement("option");
+  op.value = cat;
+  op.textContent = cat;
+  categorySelect.appendChild(op);
+});
+
+
+/* =====================================
+   TEMA
+===================================== */
+document.getElementById("themeSelector").addEventListener("change", e => {
+  const theme = e.target.value;
+  document.body.className =
+    theme === "dark" ? "theme-dark" :
+    theme === "colorful" ? "theme-colorful" :
+    "theme-light";
+});
+
+
+/* =====================================
+   GENERAR RONDA
+===================================== */
+let impostorIndex = -1;
+let chosenWord = "";
+let players = ["Jugador 1","Jugador 2","Jugador 3","Jugador 4","Jugador 5","Jugador 6"];
+
+document.getElementById("randomBtn").addEventListener("click", () => {
+  const keys = Object.keys(categories);
+  const randomCat = keys[Math.floor(Math.random() * keys.length)];
+  chosenWord = categories[randomCat][Math.floor(Math.random()*20)];
+  impostorIndex = Math.floor(Math.random()*players.length);
+  showPlayers();
+});
+
+document.getElementById("startBtn").addEventListener("click", () => {
+  const cat = categorySelect.value;
+  chosenWord = categories[cat][Math.floor(Math.random()*20)];
+  impostorIndex = Math.floor(Math.random()*players.length);
+  showPlayers();
+});
+
+
+/* =====================================
+   MOSTRAR JUGADORES
+===================================== */
+function showPlayers(){
+  const area = document.getElementById("playersArea");
+  area.innerHTML = "";
+  area.style.display = "grid";
+
+  players.forEach((name, index)=>{
+    const b = document.createElement("button");
+    b.className = "player-btn";
+    b.textContent = name;
+    b.onclick = ()=> reveal(index);
+    area.appendChild(b);
+  });
+}
+
+
+/* =====================================
+   REVELAR MODAL
+===================================== */
+function reveal(index){
+  const modal = document.getElementById("modal");
+  const title = document.getElementById("revealTitle");
+  const word = document.getElementById("revealWord");
+
+  if(index === impostorIndex){
+    title.textContent = "Sos el IMPOSTOR 😈";
+    word.textContent = "— NO TENÉS PALABRA —";
+  } else {
+    title.textContent = "Tu palabra es:";
+    word.textContent = chosenWord;
+  }
+
+  modal.classList.add("show");
+}
+
+function closeModal(){
+  document.getElementById("modal").classList.remove("show");
+}
+</script>
+
+</body>
 </html>
